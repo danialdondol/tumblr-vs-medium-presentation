@@ -1,0 +1,2326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0d0e0f">
+<title>Tumblr vs Medium — A Comparison of Blogging Platforms</title>
+<meta name="description" content="A five-person presentation comparing Tumblr and Medium: history, features, audiences, trade-offs and best-fit use cases.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   1. DESIGN TOKENS
+   ============================================================ */
+:root{
+  --paper:#f4f1e9;
+  --paper-deep:#e9e4d8;
+  --ink:#171717;
+  --muted:#676056;
+  --faint:#8c8579;
+  --line:rgba(23,23,23,.14);
+  --line-strong:rgba(23,23,23,.26);
+  --tumblr:#243b5a;
+  --tumblr-bright:#36547d;
+  --tumblr-soft:#e3e9f1;
+  --medium:#1a8917;
+  --medium-ink:#126b12;
+  --medium-soft:#e5efe1;
+  --gold:#9a733c;
+  --plum:#6c5872;
+  --serif:"Fraunces","Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
+  --sans:"Inter","Segoe UI",system-ui,-apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif;
+  --ease:cubic-bezier(.22,.68,0,1);
+  --bar-h:56px;
+}
+
+*,*::before,*::after{box-sizing:border-box}
+html{height:100%;background:#0d0e0f}
+body{
+  margin:0;
+  min-height:100%;
+  background:
+    radial-gradient(circle at 18% -10%,rgba(36,59,90,.34),transparent 42%),
+    radial-gradient(circle at 92% 112%,rgba(26,137,23,.15),transparent 38%),
+    #0d0e0f;
+  color:var(--ink);
+  font-family:var(--sans);
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+  overflow:hidden;
+}
+button{font:inherit;color:inherit}
+button:focus-visible,a:focus-visible{outline:2px solid #f0c36a;outline-offset:3px}
+::selection{background:rgba(240,195,106,.45)}
+
+/* ============================================================
+   2. APP SHELL / TOOLBAR
+   ============================================================ */
+.app{
+  height:100vh;
+  height:100dvh;
+  display:flex;
+  flex-direction:column;
+  min-height:0;
+}
+.deck-shell{
+  flex:1 1 auto;
+  min-height:0;
+  display:grid;
+  place-items:center;
+  padding:16px clamp(10px,2vw,30px) 10px;
+}
+.stage{
+  position:relative;
+  width:min(100%,calc((100dvh - var(--bar-h) - 42px) * 16 / 9));
+  aspect-ratio:16/9;
+  overflow:hidden;
+  background:var(--paper);
+  border:1px solid rgba(255,255,255,.13);
+  box-shadow:0 32px 90px rgba(0,0,0,.55),0 3px 0 rgba(0,0,0,.35);
+  container-type:size;
+  isolation:isolate;
+}
+.progress-rail{
+  position:absolute;
+  z-index:12;
+  left:0;right:0;bottom:0;
+  height:3px;
+  background:rgba(23,23,23,.09);
+}
+.progress-fill{
+  height:100%;
+  width:0;
+  background:linear-gradient(90deg,var(--tumblr) 0%,var(--tumblr) 45%,var(--medium) 55%,var(--medium) 100%);
+  transition:width .5s var(--ease);
+}
+.toolbar{
+  flex:0 0 var(--bar-h);
+  display:grid;
+  grid-template-columns:1fr auto 1fr;
+  align-items:center;
+  gap:12px;
+  padding:0 clamp(12px,2.4vw,30px);
+  border-top:1px solid rgba(255,255,255,.09);
+  background:rgba(10,11,12,.92);
+  color:#d8d4ca;
+  position:relative;
+  z-index:40;
+}
+.brand{
+  display:flex;
+  align-items:center;
+  gap:.62rem;
+  min-width:0;
+  font-size:.68rem;
+  font-weight:700;
+  letter-spacing:.17em;
+  text-transform:uppercase;
+  color:#aaa49a;
+  white-space:nowrap;
+}
+.brand .brand-compact{display:none}
+.brand b{color:#f1ede4;font-weight:700}
+.brand .cross{color:var(--medium);font-size:.9rem}
+.brand .brand-rule{width:26px;height:1px;background:rgba(255,255,255,.22)}
+.toolbar-center{
+  display:flex;
+  align-items:center;
+  gap:4px;
+  padding:4px;
+  border:1px solid rgba(255,255,255,.11);
+  border-radius:999px;
+  background:rgba(255,255,255,.045);
+}
+.tool-btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:.42rem;
+  height:34px;
+  min-width:36px;
+  padding:0 11px;
+  border:0;
+  border-radius:999px;
+  background:transparent;
+  color:#d6d2c9;
+  cursor:pointer;
+  transition:background .2s ease,color .2s ease,transform .2s ease;
+  white-space:nowrap;
+}
+.tool-btn:hover{background:rgba(255,255,255,.1);color:#fff}
+.tool-btn:active{transform:scale(.96)}
+.tool-btn svg{width:16px;height:16px;flex:none}
+.tool-btn .tool-label{font-size:.67rem;font-weight:600;letter-spacing:.03em}
+.tool-btn[aria-pressed="true"],.tool-btn[aria-expanded="true"]{background:rgba(255,255,255,.14);color:#fff}
+.tool-divider{width:1px;height:19px;background:rgba(255,255,255,.13);margin:0 2px}
+.status{
+  justify-self:end;
+  display:flex;
+  align-items:center;
+  gap:.55rem;
+  font-size:.68rem;
+  font-variant-numeric:tabular-nums;
+  letter-spacing:.08em;
+  color:#aaa49a;
+  white-space:nowrap;
+}
+.status strong{color:#f0ece3;font-weight:600}
+.status .status-pct{color:#777268}
+.status-dot{width:5px;height:5px;border-radius:50%;background:var(--medium);box-shadow:0 0 10px rgba(26,137,23,.8)}
+
+/* ============================================================
+   3. SLIDE SYSTEM
+   ============================================================ */
+.deck{position:absolute;inset:0;overflow:hidden}
+.slide{
+  --accent:var(--ink);
+  --accent-soft:rgba(23,23,23,.075);
+  --shift:1;
+  overflow-wrap:break-word;
+  position:absolute;
+  inset:0;
+  display:flex;
+  flex-direction:column;
+  padding:5.1cqw 5.6cqw 3.7cqw;
+  overflow:hidden;
+  background:
+    radial-gradient(circle at 92% 4%,var(--accent-soft) 0,transparent 36%),
+    linear-gradient(115deg,rgba(255,255,255,.16),transparent 42%),
+    var(--paper);
+  opacity:0;
+  visibility:hidden;
+  transform:translate3d(calc(var(--shift) * 2.2cqw),0,0) scale(.992);
+  transition:opacity .42s ease,transform .58s var(--ease),visibility 0s linear .58s;
+  will-change:opacity,transform;
+}
+.deck[data-dir="prev"] .slide{--shift:-1}
+.slide.active{
+  opacity:1;
+  visibility:visible;
+  transform:translate3d(0,0,0) scale(1);
+  transition:opacity .42s ease,transform .58s var(--ease),visibility 0s linear 0s;
+  z-index:2;
+}
+.slide::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:0;
+  opacity:.23;
+  pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140' viewBox='0 0 140 140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.16'/%3E%3C/svg%3E");
+  mix-blend-mode:multiply;
+}
+.slide::after{
+  content:attr(data-index);
+  position:absolute;
+  z-index:0;
+  right:3.8cqw;
+  bottom:1.4cqw;
+  font-family:var(--serif);
+  font-size:11.5cqw;
+  line-height:.8;
+  letter-spacing:-.06em;
+  color:transparent;
+  -webkit-text-stroke:.055cqw rgba(23,23,23,.075);
+  pointer-events:none;
+  user-select:none;
+}
+.slide > *{position:relative;z-index:1}
+.info-card,.feature,.platform-panel,.audience-card,.score-col,.decision-card,.matrix-cell,.similarity-item,.source-group,.roster,.roster-item,.agenda-row>*,.timeline-item,.title-bottom>*{min-width:0}
+.slide.platform-tumblr{--accent:var(--tumblr);--accent-soft:rgba(36,59,90,.12)}
+.slide.platform-medium{--accent:var(--medium-ink);--accent-soft:rgba(26,137,23,.11)}
+.slide.compare{--accent:var(--gold);--accent-soft:rgba(154,115,60,.12)}
+.slide.neutral{--accent:#454038;--accent-soft:rgba(69,64,56,.08)}
+
+.slide-head{
+  flex:none;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:2cqw;
+  min-height:2.2cqw;
+  padding-bottom:1.2cqw;
+  border-bottom:1px solid var(--line);
+}
+.kicker{
+  display:flex;
+  align-items:center;
+  gap:.9cqw;
+  margin:0;
+  font-size:.86cqw;
+  line-height:1.2;
+  font-weight:700;
+  letter-spacing:.17em;
+  text-transform:uppercase;
+  color:var(--muted);
+}
+.kicker::before{content:"";width:2.5cqw;height:2px;background:var(--accent);flex:none}
+.member-badge{
+  display:inline-flex;
+  align-items:center;
+  gap:.48cqw;
+  padding:.44cqw .82cqw;
+  border:1px solid var(--line);
+  border-radius:999px;
+  background:rgba(255,255,255,.43);
+  color:#4f4940;
+  font-size:.72cqw;
+  line-height:1;
+  font-weight:600;
+  letter-spacing:.055em;
+  white-space:nowrap;
+}
+.member-badge .dot{width:.46cqw;height:.46cqw;border-radius:50%;background:var(--accent);flex:none}
+.slide[data-member="1"] .member-badge .dot{background:#8d7a5d}
+.slide[data-member="2"] .member-badge .dot{background:var(--tumblr)}
+.slide[data-member="3"] .member-badge .dot{background:var(--medium)}
+.slide[data-member="4"] .member-badge .dot{background:var(--gold)}
+.slide[data-member="5"] .member-badge .dot{background:var(--plum)}
+
+.slide-body{
+  flex:1 1 auto;
+  min-height:0;
+  display:flex;
+  flex-direction:column;
+  padding-top:2.1cqw;
+}
+.slide-foot{
+  flex:none;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:1.5cqw;
+  margin-top:auto;
+  padding-top:1.25cqw;
+  border-top:1px solid var(--line);
+  color:var(--faint);
+  font-size:.64cqw;
+  line-height:1.2;
+  font-weight:600;
+  letter-spacing:.145em;
+  text-transform:uppercase;
+}
+.slide-foot .foot-platform{color:var(--accent)}
+.slide-foot .foot-num{font-variant-numeric:tabular-nums;letter-spacing:.1em;color:var(--muted)}
+
+h1,h2,h3,h4,p{margin-top:0}
+h1,h2,h3{font-family:var(--serif);font-variation-settings:"SOFT" 30,"WONK" 1}
+h2{
+  max-width:88%;
+  margin:0 0 1.3cqw;
+  font-size:4.25cqw;
+  line-height:.99;
+  font-weight:500;
+  letter-spacing:-.035em;
+  color:var(--ink);
+  text-wrap:balance;
+}
+h2 em{font-weight:400}
+.lead{
+  max-width:64cqw;
+  margin:0 0 2.25cqw;
+  font-size:1.46cqw;
+  line-height:1.48;
+  color:var(--muted);
+  letter-spacing:-.012em;
+  text-wrap:pretty;
+}
+.lead strong{color:var(--ink);font-weight:600}
+.eyebrow{
+  margin:0 0 .9cqw;
+  font-size:.78cqw;
+  font-weight:700;
+  letter-spacing:.18em;
+  text-transform:uppercase;
+  color:var(--accent);
+}
+.small-note{font-size:.9cqw;line-height:1.4;color:var(--muted)}
+
+/* Reusable editorial accents */
+.rule{height:1px;background:var(--line);border:0;margin:0}
+.pill-row{display:flex;flex-wrap:wrap;gap:.6cqw}
+.pill{
+  display:inline-flex;
+  align-items:center;
+  gap:.4cqw;
+  padding:.48cqw .8cqw;
+  border:1px solid var(--line);
+  border-radius:999px;
+  background:rgba(255,255,255,.4);
+  font-size:.8cqw;
+  line-height:1.1;
+  color:#4d473e;
+  font-weight:500;
+}
+.pill.accent{border-color:color-mix(in srgb,var(--accent) 32%,transparent);background:var(--accent-soft);color:var(--accent)}
+.card{
+  border:1px solid var(--line);
+  border-radius:.62cqw;
+  background:rgba(255,255,255,.43);
+  box-shadow:0 1px 0 rgba(255,255,255,.5) inset;
+}
+
+/* ============================================================
+   4. TITLE SLIDE
+   ============================================================ */
+.slide--title{
+  justify-content:space-between;
+  padding:4.9cqw 5.6cqw 4.1cqw;
+  color:#f2eee5;
+  background:
+    radial-gradient(ellipse at 10% 18%,rgba(36,59,90,.85) 0,transparent 47%),
+    radial-gradient(ellipse at 92% 92%,rgba(26,137,23,.31) 0,transparent 42%),
+    #101214;
+}
+.slide--title::before{
+  opacity:.5;
+  mix-blend-mode:screen;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.72' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.13'/%3E%3C/svg%3E");
+}
+.slide--title::after{display:none}
+.title-top{display:flex;align-items:center;justify-content:space-between;gap:2cqw}
+.title-mark{
+  display:flex;align-items:center;gap:1.1cqw;
+  font-size:.76cqw;font-weight:700;letter-spacing:.19em;text-transform:uppercase;color:#b8b3a8;
+}
+.title-mark .square{
+  display:grid;place-items:center;width:2.1cqw;height:2.1cqw;
+  border:1px solid rgba(255,255,255,.24);border-radius:.3cqw;
+  font-family:var(--serif);font-size:1.25cqw;letter-spacing:0;color:#f4efe4;
+}
+.title-meta{display:flex;align-items:center;gap:1.2cqw}
+.title-date{font-size:.7cqw;letter-spacing:.16em;text-transform:uppercase;color:#8f8b82}
+.title-meta .member-badge{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.18);color:#d9d4ca}
+.title-main{padding:2.2cqw 0 0}
+.title-overline{
+  display:flex;align-items:center;gap:1cqw;
+  margin:0 0 1.55cqw;font-size:.86cqw;font-weight:700;letter-spacing:.19em;text-transform:uppercase;color:#c9c4b9;
+}
+.title-overline::before{content:"";width:4.2cqw;height:1px;background:linear-gradient(90deg,var(--tumblr-bright),var(--medium))}
+.title-main h1{
+  margin:0;
+  font-family:var(--serif);
+  font-size:8.4cqw;
+  line-height:.88;
+  font-weight:400;
+  letter-spacing:-.055em;
+  color:#f4f0e7;
+  text-wrap:balance;
+}
+.title-main h1 .brand-t{color:#b9c8de}
+.title-main h1 .brand-m{color:#a9d6a5}
+.title-main h1 .vs{
+  display:inline-block;
+  margin:0 .7cqw;
+  font-size:.37em;
+  font-style:italic;
+  font-weight:400;
+  letter-spacing:0;
+  color:#8f8b82;
+  transform:translateY(-.12em);
+}
+.title-sub{
+  max-width:52cqw;
+  margin:1.6cqw 0 0;
+  font-size:1.75cqw;
+  line-height:1.33;
+  letter-spacing:-.015em;
+  color:#d8d3c8;
+}
+.title-sub span{color:#918c82}
+.title-bridge{
+  display:flex;align-items:center;gap:1.4cqw;
+  margin-top:2.2cqw;
+  font-size:.86cqw;line-height:1.4;color:#aaa59a;
+}
+.title-bridge .line{width:3.4cqw;height:1px;background:rgba(255,255,255,.25);flex:none}
+.title-bottom{
+  display:grid;
+  grid-template-columns:minmax(0,1.05fr) minmax(0,2.7fr);
+  gap:4cqw;
+  align-items:end;
+  padding-top:2.1cqw;
+  border-top:1px solid rgba(255,255,255,.17);
+}
+.group-label{font-size:.66cqw;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#868278;margin-bottom:.55cqw}
+.group-name{font-family:var(--serif);font-size:1.85cqw;line-height:1.15;color:#eee9df;letter-spacing:-.02em}
+.group-hint{margin-top:.55cqw;font-size:.72cqw;color:#7f7b72;letter-spacing:.02em}
+.roster{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:1.1cqw}
+.roster-item{min-width:0;padding-left:.8cqw;border-left:1px solid rgba(255,255,255,.16)}
+.roster-item .r-num{display:block;margin-bottom:.45cqw;font-size:.62cqw;letter-spacing:.14em;color:#79766e}
+.roster-item strong{display:block;overflow-wrap:anywhere;font-size:.86cqw;line-height:1.25;font-weight:600;color:#e6e1d7}
+.roster-item small{display:block;margin-top:.3cqw;font-size:.66cqw;line-height:1.25;color:#8f8b81}
+
+/* ============================================================
+   5. AGENDA
+   ============================================================ */
+.agenda{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  min-height:0;
+}
+.agenda-row{
+  display:grid;
+  grid-template-columns:3.8cqw minmax(0,1.25fr) minmax(0,1.75fr) 4.6cqw;
+  align-items:center;
+  gap:1.8cqw;
+  padding:1.28cqw .35cqw;
+  border-bottom:1px solid var(--line);
+  transition:background .2s ease;
+}
+.agenda-row:first-child{border-top:1px solid var(--line)}
+.agenda-row:hover{background:rgba(255,255,255,.27)}
+.agenda-num{font-family:var(--serif);font-size:2.15cqw;line-height:1;letter-spacing:-.04em;color:var(--accent);font-variant-numeric:tabular-nums}
+.agenda-who{min-width:0}
+.agenda-member{display:block;margin-bottom:.28cqw;font-size:.63cqw;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--faint)}
+.agenda-who strong{display:block;overflow-wrap:anywhere;font-size:1.08cqw;line-height:1.2;font-weight:600;color:var(--ink)}
+.agenda-topic{min-width:0;font-family:var(--serif);font-size:1.4cqw;line-height:1.15;color:var(--ink);letter-spacing:-.015em}
+.agenda-topic span{display:block;margin-top:.35cqw;font-family:var(--sans);font-size:.76cqw;line-height:1.35;letter-spacing:0;color:var(--muted)}
+.agenda-slides{justify-self:end;font-size:.72cqw;line-height:1;font-variant-numeric:tabular-nums;letter-spacing:.06em;color:var(--muted);padding:.48cqw .62cqw;border:1px solid var(--line);border-radius:999px;background:rgba(255,255,255,.35)}
+
+/* ============================================================
+   6. GENERAL CONTENT PATTERNS
+   ============================================================ */
+.three-cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1.25cqw;margin-top:auto}
+.info-card{
+  position:relative;
+  min-height:13.1cqw;
+  padding:1.55cqw 1.5cqw 1.35cqw;
+  display:flex;
+  flex-direction:column;
+  border:1px solid var(--line);
+  border-radius:.62cqw;
+  background:rgba(255,255,255,.42);
+  overflow:hidden;
+}
+.info-card::before{content:"";position:absolute;left:0;top:0;width:100%;height:.28cqw;background:var(--accent);opacity:.8}
+.info-card .card-num{font-size:.68cqw;font-weight:700;letter-spacing:.14em;color:var(--accent);margin-bottom:auto}
+.info-card h3{margin:1.2cqw 0 .55cqw;font-size:1.62cqw;line-height:1.06;font-weight:500;letter-spacing:-.025em}
+.info-card p{margin:0;font-size:.92cqw;line-height:1.42;color:var(--muted)}
+.platform-split{display:grid;grid-template-columns:1fr 1fr;gap:1.3cqw;min-height:0}
+.platform-panel{
+  position:relative;
+  display:flex;flex-direction:column;
+  min-height:0;
+  padding:1.65cqw 1.7cqw;
+  border:1px solid var(--line);
+  border-radius:.68cqw;
+  background:rgba(255,255,255,.42);
+  overflow:hidden;
+}
+.platform-panel.tumblr{background:linear-gradient(145deg,var(--tumblr-soft),rgba(255,255,255,.34))}
+.platform-panel.medium{background:linear-gradient(145deg,var(--medium-soft),rgba(255,255,255,.34))}
+.platform-panel .panel-tag{display:flex;align-items:center;justify-content:space-between;gap:1cqw;margin-bottom:.9cqw}
+.platform-panel .panel-tag span{font-size:.64cqw;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--muted)}
+.platform-panel .panel-tag b{font-size:.66cqw;font-weight:600;letter-spacing:.08em;color:var(--muted)}
+.platform-panel h3{margin:0 0 .65cqw;font-family:var(--serif);font-size:2.55cqw;line-height:1;font-weight:500;letter-spacing:-.035em}
+.platform-panel.tumblr h3{color:var(--tumblr)}
+.platform-panel.medium h3{color:var(--medium-ink)}
+.platform-panel .panel-copy{margin:0;font-size:1.08cqw;line-height:1.42;color:#4e483f;max-width:34cqw}
+.panel-chips{display:flex;flex-wrap:wrap;gap:.45cqw;margin-top:1.25cqw}
+.panel-chips span{font-size:.66cqw;line-height:1;font-weight:600;letter-spacing:.04em;padding:.48cqw .62cqw;border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,.4);color:#5c554b}
+.platform-panel .panel-foot{display:flex;align-items:baseline;gap:.7cqw;margin-top:auto;padding-top:1.1cqw;border-top:1px solid var(--line);font-family:var(--serif);font-size:1.03cqw;line-height:1.3;color:#3f3a32}
+.platform-panel .panel-foot span{flex:none;font-family:var(--sans);font-size:.61cqw;font-weight:700;letter-spacing:.13em;text-transform:uppercase;color:var(--faint)}
+.overview-facts{display:flex;flex-direction:column;margin-top:.35cqw;border-top:1px solid var(--line)}
+.fact-row{display:flex;align-items:baseline;justify-content:space-between;gap:1.2cqw;padding:.62cqw 0;border-bottom:1px solid var(--line)}
+.fact-row:last-child{border-bottom:0}
+.fact-row span{flex:none;font-size:.63cqw;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--faint)}
+.fact-row strong{font-size:.83cqw;line-height:1.3;font-weight:600;color:#3e3931;text-align:right}
+.split-vs{
+  align-self:center;justify-self:center;display:grid;place-items:center;
+  width:3.4cqw;height:3.4cqw;border:1px solid var(--line);border-radius:50%;
+  background:var(--paper);font-family:var(--serif);font-style:italic;font-size:.92cqw;color:var(--muted);
+}
+.split-with-vs{display:grid;grid-template-columns:1fr auto 1fr;gap:.7cqw;align-items:stretch;min-height:0}
+
+/* ============================================================
+   7. TIMELINE
+   ============================================================ */
+.timeline{
+  position:relative;
+  display:grid;
+  grid-template-columns:repeat(5,minmax(0,1fr));
+  gap:1.15cqw;
+  margin-top:auto;
+  padding-top:2.1cqw;
+}
+.timeline::before{
+  content:"";position:absolute;left:0;right:0;top:3.55cqw;height:1px;background:var(--line-strong);
+}
+.timeline-item{position:relative;min-width:0;padding-top:3.6cqw}
+.timeline-item::before{
+  content:"";position:absolute;z-index:1;top:3.25cqw;left:0;width:.62cqw;height:.62cqw;border:.12cqw solid var(--accent);border-radius:50%;background:var(--paper);
+}
+.timeline-year{font-family:var(--serif);font-size:2.3cqw;line-height:1;letter-spacing:-.04em;color:var(--accent);margin-bottom:1.1cqw;font-variant-numeric:tabular-nums}
+.timeline-item h3{margin:0 0 .45cqw;font-family:var(--sans);font-size:.9cqw;line-height:1.25;font-weight:700;letter-spacing:.01em;color:var(--ink)}
+.timeline-item p{margin:0;font-size:.79cqw;line-height:1.4;color:var(--muted)}
+.timeline--four{grid-template-columns:repeat(4,minmax(0,1fr))}
+.timeline--four .timeline-item{padding-top:3.6cqw}
+
+/* Alternating history timeline: above / below a central rule */
+.timeline--split{
+  grid-template-columns:repeat(5,minmax(0,1fr));
+  grid-template-rows:1fr 1fr;
+  gap:0 1.15cqw;
+  flex:1;
+  margin-top:1.25cqw;
+  padding-top:0;
+}
+.timeline--split::before{top:50%;bottom:auto}
+.timeline--split .timeline-item{
+  display:flex;
+  flex-direction:column;
+  justify-content:flex-end;
+  padding:0 0 2.5cqw;
+  min-height:0;
+}
+.timeline--split .timeline-item:nth-child(even){
+  grid-row:2;
+  justify-content:flex-start;
+  padding:2.5cqw 0 0;
+}
+.timeline--split .timeline-item::before{top:auto;bottom:-.31cqw;left:0}
+.timeline--split .timeline-item:nth-child(even)::before{top:-.31cqw;bottom:auto}
+.timeline--split .timeline-year{font-size:2.55cqw;margin-bottom:.62cqw}
+.timeline--split .timeline-item h3{font-size:.94cqw;margin-bottom:.4cqw}
+.timeline--split .timeline-item p{font-size:.86cqw;line-height:1.38}
+
+/* ============================================================
+   8. FEATURES
+   ============================================================ */
+.feature-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:.9cqw;margin-top:auto}
+.feature{
+  min-height:16.5cqw;
+  padding:1.3cqw 1.1cqw 1.2cqw;
+  display:flex;flex-direction:column;
+  justify-content:flex-start;
+  border:1px solid var(--line);border-radius:.55cqw;
+  background:rgba(255,255,255,.4);
+}
+.feature .f-num{font-family:var(--serif);font-size:1.55cqw;line-height:1;color:var(--accent);letter-spacing:-.04em;margin-bottom:1.15cqw}
+.feature h3{margin:1.15cqw 0 .48cqw;font-family:var(--sans);font-size:.98cqw;line-height:1.24;font-weight:700;letter-spacing:-.01em}
+.feature p{margin:0;font-size:.86cqw;line-height:1.42;color:var(--muted)}
+.f-tag{display:flex;align-items:center;gap:.55cqw;margin-top:auto;padding-top:1.2cqw;font-size:.62cqw;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--faint)}
+.f-tag::before{content:"";width:1.35cqw;height:1px;background:var(--accent);opacity:.65}
+.feature-quote{
+  display:grid;
+  grid-template-columns:auto 1fr;
+  gap:1.2cqw;align-items:center;
+  margin-top:1.2cqw;
+  padding:1.05cqw 1.3cqw;
+  border-radius:.55cqw;
+  background:var(--ink);
+  color:var(--paper);
+}
+.feature-quote .q-mark{font-family:var(--serif);font-size:2.3cqw;line-height:.8;color:#b5a17a}
+.feature-quote p{margin:0;font-family:var(--serif);font-size:1.24cqw;line-height:1.25;letter-spacing:-.015em;color:#eee9df}
+.feature-quote p span{color:#aaa59a}
+
+.feature-list{display:flex;flex-direction:column;gap:0;margin-top:auto;border-top:1px solid var(--line)}
+.feature-row{
+  display:grid;grid-template-columns:3.1cqw minmax(0,1fr) 6.2cqw;
+  gap:1.1cqw;align-items:baseline;
+  padding:1.24cqw 0;
+  border-bottom:1px solid var(--line);
+}
+.feature-row .fr-num{font-family:var(--serif);font-size:1.25cqw;color:var(--accent);letter-spacing:-.04em}
+.feature-row h3{margin:0 0 .25cqw;font-family:var(--sans);font-size:.98cqw;line-height:1.25;font-weight:700}
+.feature-row p{margin:0;font-size:.82cqw;line-height:1.35;color:var(--muted)}
+.feature-row .fr-meta{justify-self:end;font-size:.64cqw;line-height:1.2;text-transform:uppercase;letter-spacing:.1em;color:var(--faint);text-align:right}
+.feature-layout{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(0,.85fr);gap:2.2cqw;align-items:stretch;min-height:0}
+.reading-loop{
+  display:flex;flex-direction:column;justify-content:space-between;
+  padding:1.6cqw;
+  border-radius:.68cqw;
+  background:var(--ink);
+  color:var(--paper);
+}
+.reading-loop .rl-label{font-size:.64cqw;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:#aaa59a}
+.reading-loop h3{margin:1.1cqw 0 0;font-family:var(--serif);font-size:2.2cqw;line-height:1.02;font-weight:500;letter-spacing:-.03em;color:#f0ece3}
+.loop-steps{display:flex;flex-direction:column;gap:.55cqw;margin-top:1.4cqw}
+.loop-step{display:flex;align-items:center;gap:.7cqw;font-size:.86cqw;line-height:1.25;color:#d8d3c8}
+.loop-step .ls-dot{width:.42cqw;height:.42cqw;border-radius:50%;background:var(--medium);flex:none}
+.reading-loop .rl-foot{margin-top:1.3cqw;padding-top:.95cqw;border-top:1px solid rgba(255,255,255,.16);font-family:var(--serif);font-size:1.05cqw;line-height:1.3;color:#a9a49a}
+
+/* ============================================================
+   9. CONTENT & AUDIENCE
+   ============================================================ */
+.audience-layout{display:grid;grid-template-columns:minmax(0,1.32fr) minmax(0,.82fr);gap:2.1cqw;align-items:stretch;min-height:0}
+.content-cluster{display:flex;flex-direction:column;min-height:0}
+.content-cluster .cluster-label{font-size:.65cqw;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);margin-bottom:1.05cqw}
+.tag-cloud{display:flex;flex-wrap:wrap;gap:.62cqw;align-content:flex-start;max-width:46cqw}
+.tag{
+  display:inline-flex;align-items:center;
+  padding:.62cqw 1.03cqw;
+  border:1px solid color-mix(in srgb,var(--accent) 25%,var(--line));
+  border-radius:999px;
+  background:rgba(255,255,255,.43);
+  font-size:.94cqw;line-height:1.1;color:#3f3a32;font-weight:500;
+}
+.tag:nth-child(3n+2){background:var(--accent-soft)}
+.tag.large{font-size:1.08cqw;padding:.72cqw 1.12cqw}
+.content-statement{margin-top:1.8cqw;padding-top:1.4cqw;border-top:1px solid var(--line);font-family:var(--serif);font-size:1.55cqw;line-height:1.12;letter-spacing:-.025em;color:var(--ink);max-width:42cqw}
+.audience-card{
+  display:flex;flex-direction:column;
+  padding:1.65cqw;
+  border-radius:.68cqw;
+  background:var(--accent);
+  color:#f4f0e7;
+  overflow:hidden;
+}
+.audience-card .ac-label{font-size:.62cqw;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.63)}
+.audience-card .ac-title{margin:1.1cqw 0 1.35cqw;font-family:var(--serif);font-size:2.1cqw;line-height:1;letter-spacing:-.03em;color:#fff}
+.audience-list{display:flex;flex-direction:column;gap:1.1cqw;margin-top:0}
+.audience-item{display:grid;grid-template-columns:auto 1fr;gap:.8cqw;align-items:start}
+.audience-item .ai-num{font-family:var(--serif);font-size:.86cqw;line-height:1.3;color:rgba(255,255,255,.55)}
+.audience-item p{margin:0;font-size:.94cqw;line-height:1.3;color:rgba(255,255,255,.9)}
+.audience-card .ac-foot{margin-top:auto;padding-top:1.2cqw;border-top:1px solid rgba(255,255,255,.2);font-size:.78cqw;line-height:1.35;color:rgba(255,255,255,.66)}
+.creative-stat{display:flex;align-items:baseline;gap:.8cqw;margin-top:auto;padding-top:1.3cqw}
+.creative-stat strong{font-family:var(--serif);font-size:3.35cqw;line-height:.9;font-weight:500;letter-spacing:-.05em;color:var(--accent)}
+.creative-stat span{font-size:.78cqw;line-height:1.3;color:var(--muted);max-width:13cqw}
+
+/* ============================================================
+   10. SIMILARITIES
+   ============================================================ */
+.similarity-layout{display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,1.3fr);gap:3.1cqw;align-items:center;min-height:0}
+.venn{position:relative;min-height:27cqw}
+.venn-circle{
+  position:absolute;top:50%;width:19.5cqw;height:19.5cqw;
+  border:1px solid var(--line-strong);border-radius:50%;
+  transform:translateY(-50%);
+}
+.venn-circle.left{left:0;background:rgba(36,59,90,.13);border-color:rgba(36,59,90,.3)}
+.venn-circle.right{left:12.6cqw;background:rgba(26,137,23,.11);border-color:rgba(26,137,23,.28)}
+.venn-label{position:absolute;top:50%;transform:translateY(-50%);font-family:var(--serif);font-size:1.4cqw;line-height:1;letter-spacing:-.02em}
+.venn-label.left{left:3.1cqw;color:var(--tumblr)}
+.venn-label.right{right:3.1cqw;color:var(--medium-ink)}
+.venn-center{
+  position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+  display:grid;place-items:center;width:5.6cqw;height:5.6cqw;
+  border-radius:50%;background:var(--paper);border:1px solid var(--line);
+  text-align:center;font-size:.61cqw;line-height:1.2;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);
+}
+.similarity-list{display:flex;flex-direction:column;border-top:1px solid var(--line)}
+.similarity-item{
+  display:grid;grid-template-columns:3.4cqw minmax(0,1fr) minmax(0,13.5cqw);
+  align-items:center;gap:1.2cqw;
+  padding:1.23cqw 0;border-bottom:1px solid var(--line);
+}
+.similarity-item .si-num{font-family:var(--serif);font-size:1.2cqw;color:var(--accent);letter-spacing:-.04em}
+.similarity-item h3{margin:0;font-family:var(--sans);font-size:1.03cqw;line-height:1.22;font-weight:600}
+.similarity-item p{margin:0;font-size:.78cqw;line-height:1.3;color:var(--muted)}
+
+/* ============================================================
+   11. COMPARISON TABLE
+   ============================================================ */
+.table-wrap{margin-top:auto;border:1px solid var(--line);border-radius:.6cqw;overflow:hidden;background:rgba(255,255,255,.3)}
+table.compare{width:100%;border-collapse:collapse;table-layout:fixed}
+table.compare col.criteria{width:16%}
+table.compare col.tumblr-col{width:42%}
+table.compare col.medium-col{width:42%}
+table.compare th,table.compare td{padding:.82cqw 1.05cqw;text-align:left;vertical-align:middle;border-right:1px solid var(--line);border-bottom:1px solid var(--line)}
+table.compare th:last-child,table.compare td:last-child{border-right:0}
+table.compare tr:last-child td{border-bottom:0}
+table.compare thead th{
+  padding:.78cqw 1.05cqw;
+  background:rgba(23,23,23,.045);
+  font-size:.65cqw;font-weight:700;letter-spacing:.13em;text-transform:uppercase;color:var(--muted);
+}
+table.compare thead th.t-head{color:var(--tumblr);background:rgba(36,59,90,.08)}
+table.compare thead th.m-head{color:var(--medium-ink);background:rgba(26,137,23,.07)}
+table.compare tbody th{
+  font-family:var(--serif);font-size:1.08cqw;line-height:1.15;font-weight:500;letter-spacing:-.015em;color:var(--ink);
+  background:rgba(255,255,255,.24);
+}
+table.compare td{font-size:.94cqw;line-height:1.3;color:#4d473e}
+table.compare tbody tr:nth-child(even) td{background:rgba(255,255,255,.18)}
+table.compare td.t-cell{box-shadow:inset 2px 0 0 rgba(36,59,90,.23)}
+table.compare td.m-cell{box-shadow:inset 2px 0 0 rgba(26,137,23,.23)}
+.table-key{display:flex;justify-content:space-between;gap:1cqw;margin-top:.85cqw;font-size:.65cqw;line-height:1.3;color:var(--faint)}
+
+/* ============================================================
+   12. SIDE-BY-SIDE MATRIX
+   ============================================================ */
+.matrix{flex:1;display:flex;flex-direction:column;justify-content:center;min-height:0}
+.matrix-head{display:grid;grid-template-columns:12.5cqw 1fr 1fr;gap:0;border-bottom:1px solid var(--line-strong)}
+.matrix-head div{padding:.72cqw 1cqw;font-size:.64cqw;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--faint)}
+.matrix-head .mh-t{color:var(--tumblr)}
+.matrix-head .mh-m{color:var(--medium-ink)}
+.matrix-row{display:grid;grid-template-columns:12.5cqw 1fr 1fr;border-bottom:1px solid var(--line)}
+.matrix-label{padding:1.4cqw 1cqw 1.4cqw 0;font-family:var(--serif);font-size:1.18cqw;line-height:1.1;letter-spacing:-.02em;color:var(--ink)}
+.matrix-cell{padding:1.35cqw 1.2cqw;border-left:1px solid var(--line);display:flex;flex-direction:column;gap:.45cqw}
+.matrix-cell .mc-title{font-size:.84cqw;font-weight:700;color:var(--ink)}
+.matrix-cell p{margin:0;font-size:.88cqw;line-height:1.38;color:var(--muted)}
+.matrix-cell .mc-tags{display:flex;flex-wrap:wrap;gap:.4cqw;margin-top:.2cqw}
+.matrix-cell .mc-tags span{font-size:.64cqw;line-height:1;padding:.38cqw .55cqw;border:1px solid var(--line);border-radius:999px;color:var(--faint);background:rgba(255,255,255,.32)}
+.matrix-cell.t-cell{background:rgba(36,59,90,.035)}
+.matrix-cell.m-cell{background:rgba(26,137,23,.03)}
+
+/* ============================================================
+   13. SCORECARD
+   ============================================================ */
+.scorecard{display:grid;grid-template-columns:1fr 1fr;gap:1.1cqw;flex:1;min-height:0;margin-top:1.2cqw}
+.score-col{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:.62cqw;overflow:hidden;background:rgba(255,255,255,.35)}
+.score-head{display:flex;align-items:center;justify-content:space-between;gap:1cqw;padding:.82cqw 1.2cqw;border-bottom:1px solid var(--line)}
+.score-head strong{font-family:var(--serif);font-size:1.5cqw;line-height:1;font-weight:500;letter-spacing:-.03em}
+.score-head span{font-size:.6cqw;font-weight:700;letter-spacing:.13em;text-transform:uppercase;color:var(--faint)}
+.score-col.tumblr .score-head{background:rgba(36,59,90,.08)}
+.score-col.tumblr .score-head strong{color:var(--tumblr)}
+.score-col.medium .score-head{background:rgba(26,137,23,.07)}
+.score-col.medium .score-head strong{color:var(--medium-ink)}
+.score-row{display:grid;grid-template-columns:6.1cqw 1fr;gap:1cqw;align-items:center;flex:1;padding:1.02cqw 1.2cqw;border-bottom:1px solid var(--line)}
+.score-row:last-child{border-bottom:0}
+.score-row .s-label{font-size:.66cqw;font-weight:700;letter-spacing:.105em;text-transform:uppercase;color:var(--faint);line-height:1.35}
+.score-row p{margin:0;font-size:.92cqw;line-height:1.4;color:#4d473e}
+.score-row.watch p{color:#675f54}
+
+/* ============================================================
+   14. CHOOSE / DECISION
+   ============================================================ */
+.decision{display:grid;grid-template-columns:1fr 1fr;gap:1.2cqw;flex:1;min-height:0;margin-top:1.2cqw}
+.decision-card{
+  position:relative;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  padding:1.55cqw 1.55cqw 1.35cqw;
+  border:1px solid var(--line);
+  border-radius:.65cqw;
+  background:rgba(255,255,255,.4);
+  overflow:hidden;
+}
+.decision-card.tumblr{border-top:.32cqw solid var(--tumblr)}
+.decision-card.medium{border-top:.32cqw solid var(--medium)}
+.decision-card .dc-kicker{font-size:.62cqw;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--faint)}
+.decision-card h3{margin:.72cqw 0 1.15cqw;font-family:var(--serif);font-size:2.05cqw;line-height:1.02;font-weight:500;letter-spacing:-.03em}
+.decision-card.tumblr h3{color:var(--tumblr)}
+.decision-card.medium h3{color:var(--medium-ink)}
+.decision-list{display:flex;flex-direction:column;gap:.76cqw}
+.decision-item{display:grid;grid-template-columns:1.5cqw 1fr;gap:.6cqw;align-items:start}
+.decision-item span{font-family:var(--serif);font-size:.76cqw;line-height:1.45;color:var(--accent)}
+.decision-item p{margin:0;font-size:.94cqw;line-height:1.38;color:#4d473e}
+.overlap{
+  display:flex;align-items:center;gap:1.2cqw;
+  margin-top:1cqw;padding:.74cqw 1.1cqw;
+  border:1px dashed var(--line-strong);border-radius:.55cqw;
+  font-size:.78cqw;line-height:1.35;color:var(--muted);
+}
+.overlap strong{color:var(--ink);font-weight:600;flex:none}
+
+/* ============================================================
+   15. DARK CONCLUSION
+   ============================================================ */
+.slide--conclusion{
+  color:#f3efe6;
+  background:
+    radial-gradient(ellipse at 12% 12%,rgba(36,59,90,.75) 0,transparent 48%),
+    radial-gradient(ellipse at 88% 86%,rgba(26,137,23,.22) 0,transparent 40%),
+    #101214;
+}
+.slide--conclusion::before{opacity:.34;mix-blend-mode:screen}
+.slide--conclusion::after{-webkit-text-stroke-color:rgba(255,255,255,.07)}
+.slide--conclusion .kicker{color:#aaa59b}
+.slide--conclusion .kicker::before{background:linear-gradient(90deg,#7c9dc9,#7ec879)}
+.slide--conclusion .member-badge{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.18);color:#d9d4ca}
+.slide--conclusion .slide-foot{color:#7e7a71;border-color:rgba(255,255,255,.15)}
+.slide--conclusion .slide-foot .foot-platform{color:#b5c9e3}
+.slide--conclusion .slide-head{border-color:rgba(255,255,255,.16)}
+.conclusion-main{display:flex;flex-direction:column;justify-content:center;flex:1;min-height:0;padding:1.3cqw 0}
+.conclusion-main .c-overline{font-size:.83cqw;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#a7a298;margin-bottom:1.1cqw}
+.conclusion-main h2{
+  max-width:88cqw;margin:0;
+  font-size:5.4cqw;line-height:.97;font-weight:400;letter-spacing:-.045em;color:#f4f0e7;
+}
+.conclusion-main h2 .line-one{color:#f4f0e7}
+.conclusion-main h2 .line-two{color:#a9d6a5;font-style:italic}
+.conclusion-main .c-sub{margin:1.45cqw 0 0;max-width:54cqw;font-size:1.38cqw;line-height:1.45;color:#b8b3a8}
+.conclusion-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.1cqw;margin-top:auto;padding-top:1.7cqw;border-top:1px solid rgba(255,255,255,.16)}
+.conclusion-card{padding-left:1.1cqw;border-left:1px solid rgba(255,255,255,.2)}
+.conclusion-card .cc-num{display:block;margin-bottom:.62cqw;font-size:.61cqw;font-weight:700;letter-spacing:.14em;color:#7f7b72}
+.conclusion-card strong{display:block;margin-bottom:.34cqw;font-family:var(--serif);font-size:1.25cqw;line-height:1.1;font-weight:500;color:#f1ede4}
+.conclusion-card p{margin:0;font-size:.78cqw;line-height:1.35;color:#969187}
+
+/* ============================================================
+   16. THANK YOU
+   ============================================================ */
+.slide--thanks{
+  color:#f3efe6;
+  background:
+    radial-gradient(ellipse at 18% 18%,rgba(36,59,90,.72) 0,transparent 49%),
+    radial-gradient(ellipse at 90% 90%,rgba(26,137,23,.21) 0,transparent 40%),
+    #101214;
+}
+.slide--thanks::before{opacity:.35;mix-blend-mode:screen}
+.slide--thanks::after{-webkit-text-stroke-color:rgba(255,255,255,.06)}
+.slide--thanks .slide-head{border-color:rgba(255,255,255,.16)}
+.slide--thanks .kicker{color:#aaa59b}
+.slide--thanks .kicker::before{background:linear-gradient(90deg,#7c9dc9,#7ec879)}
+.slide--thanks .member-badge{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.18);color:#d9d4ca}
+.slide--thanks .slide-foot{color:#7e7a71;border-color:rgba(255,255,255,.15)}
+.slide--thanks .slide-foot .foot-platform{color:#b5c9e3}
+.thanks-layout{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,.75fr);gap:3cqw;align-items:center;flex:1;min-height:0}
+.thanks-main h2{margin:0;font-size:7.8cqw;line-height:.88;font-weight:400;letter-spacing:-.055em;color:#f4f0e7}
+.thanks-main h2 span{color:#a9d6a5;font-style:italic}
+.thanks-main p{max-width:40cqw;margin:1.6cqw 0 0;font-size:1.35cqw;line-height:1.45;color:#b3aea3}
+.thanks-card{padding:1.6cqw;border:1px solid rgba(255,255,255,.17);border-radius:.65cqw;background:rgba(255,255,255,.055)}
+.thanks-card .tc-label{font-size:.61cqw;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:#8f8b81;margin-bottom:1.1cqw}
+.thanks-card h3{margin:0 0 1.2cqw;font-family:var(--serif);font-size:2.25cqw;line-height:1;font-weight:400;letter-spacing:-.03em;color:#f1ede4}
+.thanks-card .thanks-lines{display:flex;flex-direction:column;gap:.75cqw}
+.thanks-card .thanks-line{display:grid;grid-template-columns:auto 1fr;gap:.6cqw;font-size:.79cqw;line-height:1.35;color:#aaa59a}
+.thanks-card .thanks-line span{color:#7ec879}
+.thanks-foot{display:flex;align-items:flex-end;justify-content:space-between;gap:2cqw;margin-top:auto;padding-top:1.35cqw;border-top:1px solid rgba(255,255,255,.16)}
+.thanks-foot .tf-group{font-size:.7cqw;letter-spacing:.11em;text-transform:uppercase;color:#87837a}
+.thanks-foot .tf-next{font-size:.74cqw;color:#b5c9e3}
+
+/* ============================================================
+   17. SOURCES
+   ============================================================ */
+.sources-intro{display:flex;align-items:flex-end;justify-content:space-between;gap:2cqw;margin-bottom:1.1cqw}
+.sources-intro p{max-width:56cqw;margin:0;font-size:.8cqw;line-height:1.4;color:var(--muted)}
+.sources-intro .accessed{font-size:.62cqw;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);white-space:nowrap}
+.sources-grid{display:grid;grid-template-columns:1fr 1fr;gap:2.1cqw;margin-top:auto;min-height:0}
+.source-group{min-width:0}
+.source-group h3{margin:0 0 .55cqw;padding-bottom:.45cqw;border-bottom:1px solid var(--line-strong);font-family:var(--sans);font-size:.68cqw;line-height:1.2;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--accent)}
+.source-list{display:flex;flex-direction:column;gap:.5cqw}
+.source-item{display:grid;grid-template-columns:1.35cqw 1fr;gap:.45cqw;align-items:baseline;min-width:0}
+.source-item .src-num{font-family:var(--serif);font-size:.68cqw;line-height:1.35;color:var(--faint)}
+.source-item div{min-width:0}
+.source-item strong{display:block;font-size:.78cqw;line-height:1.3;font-weight:600;color:#3f3a32}
+.source-item a{display:block;overflow-wrap:anywhere;word-break:break-word;color:var(--muted);font-size:.68cqw;line-height:1.28;text-decoration:none;transition:color .2s}
+.source-item a:hover{color:var(--accent);text-decoration:underline;text-underline-offset:2px}
+.sources-note{display:flex;justify-content:space-between;gap:2cqw;margin-top:auto;padding-top:.9cqw;border-top:1px solid var(--line);font-size:.62cqw;line-height:1.3;color:var(--faint)}
+
+/* ============================================================
+   18. OVERVIEW / NOTES / TOAST
+   ============================================================ */
+.overview{
+  position:fixed;inset:0;z-index:100;
+  display:flex;flex-direction:column;
+  padding:clamp(20px,3.6vw,58px);
+  background:
+    radial-gradient(circle at 85% 0%,rgba(26,137,23,.13),transparent 36%),
+    radial-gradient(circle at 4% 100%,rgba(36,59,90,.38),transparent 44%),
+    #090a0b;
+  color:#f0ece3;
+  opacity:0;visibility:hidden;
+  transform:translateY(10px);
+  transition:opacity .32s ease,transform .4s var(--ease),visibility 0s linear .4s;
+  overflow:auto;
+}
+.overview.is-open{opacity:1;visibility:visible;transform:none;transition:opacity .32s ease,transform .4s var(--ease),visibility 0s}
+.overview-head{display:flex;align-items:flex-end;justify-content:space-between;gap:2rem;flex:none;max-width:1220px;width:100%;margin:0 auto 1.4rem}
+.overview-head .ov-kicker{font-size:.68rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#8e8a80;margin-bottom:.45rem}
+.overview-head h2{margin:0;font-size:clamp(1.7rem,3.2vw,3rem);line-height:1;color:#f2eee5}
+.overview-close{width:42px;height:42px;border-radius:50%;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.06);color:#ddd8cd;cursor:pointer;display:grid;place-items:center;flex:none}
+.overview-close:hover{background:rgba(255,255,255,.13)}
+.overview-grid{
+  display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;
+  width:100%;max-width:1220px;margin:0 auto;padding-bottom:1.4rem;
+}
+.ov-card{
+  position:relative;
+  display:flex;flex-direction:column;align-items:flex-start;justify-content:space-between;
+  min-height:104px;padding:14px 15px 13px;
+  border:1px solid rgba(255,255,255,.12);
+  border-left:3px solid var(--ov-accent,#8b8378);
+  border-radius:8px;
+  background:rgba(255,255,255,.055);
+  color:#e9e4da;
+  text-align:left;cursor:pointer;
+  transition:background .2s ease,transform .2s ease,border-color .2s ease;
+}
+.ov-card:hover{background:rgba(255,255,255,.12);transform:translateY(-2px)}
+.ov-card.current{background:rgba(255,255,255,.14);border-color:rgba(240,195,106,.6);border-left-color:#f0c36a}
+.ov-card[data-accent="tumblr"]{--ov-accent:#5d80b1}
+.ov-card[data-accent="medium"]{--ov-accent:#5dad55}
+.ov-card[data-accent="compare"]{--ov-accent:#c29a5e}
+.ov-card .ov-top{display:flex;align-items:center;justify-content:space-between;width:100%;gap:8px}
+.ov-card .ov-num{font-size:.64rem;font-weight:700;letter-spacing:.13em;color:#8c877d;font-variant-numeric:tabular-nums}
+.ov-card .ov-badge{font-size:.55rem;font-weight:600;letter-spacing:.06em;color:#a29c90;border:1px solid rgba(255,255,255,.14);border-radius:99px;padding:3px 6px;white-space:nowrap}
+.ov-card .ov-title{display:block;margin:10px 0 7px;font-family:var(--serif);font-size:clamp(.9rem,1.25vw,1.12rem);line-height:1.12;letter-spacing:-.01em;color:#f0ece3}
+.ov-card .ov-meta{font-size:.62rem;line-height:1.3;color:#8f8a80}
+.overview-foot{display:flex;align-items:center;justify-content:space-between;gap:1rem;width:100%;max-width:1220px;margin:auto auto 0;padding-top:.8rem;border-top:1px solid rgba(255,255,255,.12);color:#89857c;font-size:.68rem;letter-spacing:.03em}
+
+.notes-panel{
+  position:fixed;top:0;right:0;bottom:0;z-index:110;
+  width:min(430px,94vw);
+  display:flex;flex-direction:column;
+  padding:22px 24px 20px;
+  background:#f8f5ee;
+  color:var(--ink);
+  border-left:1px solid rgba(23,23,23,.18);
+  box-shadow:-30px 0 80px rgba(0,0,0,.4);
+  transform:translateX(104%);
+  transition:transform .42s var(--ease);
+  overflow:auto;
+}
+.notes-panel.is-open{transform:none}
+.notes-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-bottom:14px;border-bottom:1px solid var(--line)}
+.notes-head .nh-label{font-size:.62rem;font-weight:700;letter-spacing:.17em;text-transform:uppercase;color:var(--muted)}
+.notes-close{width:34px;height:34px;border-radius:50%;border:1px solid var(--line);background:rgba(255,255,255,.5);cursor:pointer;display:grid;place-items:center;color:var(--muted)}
+.notes-close:hover{background:#fff;color:var(--ink)}
+.notes-meta{margin:21px 0 7px;font-size:.61rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--plum)}
+.notes-title{margin:0 0 16px;font-family:var(--serif);font-size:1.85rem;line-height:1.05;font-weight:500;letter-spacing:-.035em}
+.notes-body{font-size:.92rem;line-height:1.5;color:#4d473e}
+.notes-body ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:12px}
+.notes-body li{position:relative;padding-left:19px}
+.notes-body li::before{content:"";position:absolute;left:0;top:.55em;width:6px;height:6px;border-radius:50%;background:var(--medium)}
+.notes-footer{margin-top:auto;padding-top:18px;border-top:1px solid var(--line);font-size:.66rem;line-height:1.4;color:var(--faint)}
+.notes-footer kbd{font-family:var(--sans);font-size:.6rem;padding:2px 5px;border:1px solid var(--line);border-radius:4px;background:#fff}
+
+.toast{
+  position:fixed;z-index:200;left:50%;bottom:calc(var(--bar-h) + 22px);
+  transform:translate(-50%,10px);
+  max-width:min(90vw,420px);
+  padding:10px 14px;border-radius:999px;
+  background:#f5f1e8;color:#28241f;
+  box-shadow:0 10px 35px rgba(0,0,0,.35);
+  font-size:.76rem;line-height:1.3;text-align:center;
+  opacity:0;visibility:hidden;pointer-events:none;
+  transition:opacity .22s,transform .22s,visibility 0s .22s;
+}
+.toast.show{opacity:1;visibility:visible;transform:translate(-50%,0);transition:opacity .22s,transform .22s,visibility 0s}
+.rotate-hint{
+  display:none;
+  position:fixed;z-index:35;top:max(12px,env(safe-area-inset-top));left:50%;
+  transform:translateX(-50%);
+  align-items:center;gap:7px;
+  padding:7px 11px;border:1px solid rgba(255,255,255,.16);border-radius:999px;
+  background:rgba(255,255,255,.07);color:#b7b1a6;
+  font-size:.62rem;line-height:1.2;letter-spacing:.04em;white-space:nowrap;
+  backdrop-filter:blur(10px);
+}
+.rotate-hint svg{width:13px;height:13px;flex:none;opacity:.8}
+@media screen and (max-width:820px) and (orientation:portrait){
+  .rotate-hint{display:flex}
+}
+
+/* ============================================================
+   19. RESPONSIVE
+   ============================================================ */
+@media screen and (max-width:920px){
+  :root{--bar-h:50px}
+  .toolbar{grid-template-columns:auto 1fr auto;gap:6px;padding:0 8px}
+  .brand{font-size:0;gap:0}
+  .brand .brand-full{display:none}
+  .brand .brand-compact{display:flex;font-size:.64rem;letter-spacing:.08em;gap:3px}
+  .toolbar-center{justify-self:center}
+  .tool-btn{height:31px;min-width:31px;padding:0 8px}
+  .tool-btn .tool-label{display:none}
+  .status{font-size:.6rem;gap:.35rem}
+  .status-pct,.status-dot{display:none}
+}
+@media screen and (max-width:820px){
+  .title-date{display:none}
+  .title-meta{gap:0}
+  .title-mark{font-size:.68cqw}
+  .deck-shell{padding:8px 6px 6px}
+  .stage{width:min(100%,calc((100dvh - var(--bar-h) - 22px) * 16 / 9))}
+  .overview{padding:16px}
+  .overview-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  .overview-head{margin-bottom:12px}
+  .overview-head h2{font-size:1.55rem}
+  .ov-card{min-height:92px;padding:11px}
+  .ov-card .ov-badge{display:none}
+  .overview-foot{font-size:.6rem}
+}
+@media screen and (max-width:480px){
+  .toolbar-center{gap:1px;padding:3px}
+  .tool-btn{min-width:29px;padding:0 7px}
+  .toolbar .status{display:none}
+  .toolbar{grid-template-columns:auto 1fr}
+  .toolbar-center{justify-self:end}
+  .notes-panel{width:100%;padding:18px}
+}
+@media screen and (max-height:760px){
+  .overview{padding:20px clamp(16px,3vw,40px)}
+  .overview-head{margin-bottom:.85rem}
+  .overview-head h2{font-size:clamp(1.45rem,2.5vw,2.15rem)}
+  .overview-grid{gap:7px}
+  .ov-card{min-height:82px;padding:10px 12px}
+  .ov-card .ov-title{margin:7px 0 4px;font-size:clamp(.82rem,1.1vw,1rem)}
+  .ov-card .ov-meta{font-size:.57rem}
+  .overview-foot{padding-top:.55rem;font-size:.6rem}
+}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;scroll-behavior:auto!important}
+}
+
+/* ============================================================
+   20. PRINT — LANDSCAPE PDF, ONE SLIDE PER PAGE
+   ============================================================ */
+@page{size:13.333in 7.5in;margin:0}
+@media print{
+  html,body{width:13.333in;background:#fff;overflow:visible}
+  body{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .app{display:block;height:auto}
+  .deck-shell{display:block;padding:0}
+  .stage{
+    width:13.333in;height:auto;aspect-ratio:auto;
+    border:0;box-shadow:none;overflow:visible;
+    container-type:normal;
+  }
+  .deck{position:relative;inset:auto;overflow:visible}
+  .progress-rail,.toolbar,.overview,.notes-panel,.toast,.rotate-hint{display:none!important}
+  .slide::before{display:none!important}
+  .slide{
+    position:relative!important;
+    inset:auto!important;
+    width:13.333in;
+    height:7.5in;
+    opacity:1!important;
+    visibility:visible!important;
+    transform:none!important;
+    break-after:page;
+    page-break-after:always;
+    transition:none!important;
+  }
+  .slide:last-of-type{break-after:auto;page-break-after:auto}
+  .slide::before{opacity:.18}
+  a{text-decoration:none}
+}
+</style>
+</head>
+<body>
+
+<div class="app" id="app">
+  <div class="deck-shell">
+    <div class="stage" id="stage" aria-label="Tumblr versus Medium presentation">
+      <div class="progress-rail" aria-hidden="true"><div class="progress-fill" id="progressFill"></div></div>
+      <main class="deck" id="deck" data-dir="next">
+
+        <!-- =====================================================
+             01 — TITLE
+             ===================================================== -->
+        <section class="slide slide--title active" data-title="Tumblr vs Medium" data-member-label="Group of 5" data-member="1" data-accent="neutral" aria-roledescription="slide" aria-label="Title slide">
+          <div class="title-top">
+            <div class="title-mark"><span class="square">×</span> Comparative media presentation</div>
+            <div class="title-meta">
+              <div class="title-date">Five speakers · One deck</div>
+              <div class="member-badge"><span class="dot"></span>Group of 5</div>
+            </div>
+          </div>
+          <div class="title-main">
+            <p class="title-overline">A comparison of blogging platforms</p>
+            <h1><span class="brand-t">Tumblr</span><span class="vs">vs</span><span class="brand-m">Medium</span></h1>
+            <p class="title-sub">Two platforms. Two very different ideas about <span>what publishing should feel like.</span></p>
+            <div class="title-bridge"><span class="line"></span>History · Features · Audience · Trade-offs · Best fit</div>
+          </div>
+          <div class="title-bottom">
+            <div>
+              <div class="group-label">Presented by</div>
+              <div class="group-name" data-group>[Group Name]</div>
+              <div class="group-hint">Use <strong>→</strong> or <strong>Space</strong> to begin</div>
+            </div>
+            <div class="roster" aria-label="Group members">
+              <div class="roster-item"><span class="r-num">01</span><strong data-member-name="1">[Member 1 Name]</strong><small>Introduction</small></div>
+              <div class="roster-item"><span class="r-num">02</span><strong data-member-name="2">[Member 2 Name]</strong><small>Tumblr</small></div>
+              <div class="roster-item"><span class="r-num">03</span><strong data-member-name="3">[Member 3 Name]</strong><small>Medium</small></div>
+              <div class="roster-item"><span class="r-num">04</span><strong data-member-name="4">[Member 4 Name]</strong><small>Comparison</small></div>
+              <div class="roster-item"><span class="r-num">05</span><strong data-member-name="5">[Member 5 Name]</strong><small>Evaluation</small></div>
+            </div>
+          </div>
+          <template class="slide-notes">
+            <ul>
+              <li>Welcome the room and introduce the group; say that the deck compares two platforms with very different publishing philosophies.</li>
+              <li>Set expectations: first the foundations, then Tumblr, Medium, a direct comparison, and finally a practical recommendation.</li>
+              <li>Mention that speaker names and the group name can be edited directly in the deck before presenting.</li>
+            </ul>
+          </template>
+        </section>
+
+        <!-- =====================================================
+             02 — AGENDA
+             ===================================================== -->
+        <section class="slide neutral" data-title="Agenda and speaker order" data-member-label="All members" data-member="1" data-accent="neutral" aria-roledescription="slide" aria-label="Agenda and speaker order">
+          <header class="slide-head">
+            <p class="kicker">Agenda</p>
+            <div class="member-badge"><span class="dot"></span>All members</div>
+          </header>
+          <div class="slide-body">
+            <p class="eyebrow">Running order</p>
+            <h2>Five voices,<br>one comparison.</h2>
+            <div class="agenda">
+              <div class="agenda-row">
+                <div class="agenda-num">01</div>
+                <div class="agenda-who"><span class="agenda-member">Member 1</span><strong data-member-name="1">[Member 1 Name]</strong></div>
+                <div class="agenda-topic">Introduction<span>Blogging platforms · Origins · Platform overview</span></div>
+                <div class="agenda-slides">03–05</div>
+              </div>
+              <div class="agenda-row">
+                <div class="agenda-num">02</div>
+                <div class="agenda-who"><span class="agenda-member">Member 2</span><strong data-member-name="2">[Member 2 Name]</strong></div>
+                <div class="agenda-topic">Tumblr<span>History · Features · Content and audience</span></div>
+                <div class="agenda-slides">06–08</div>
+              </div>
+              <div class="agenda-row">
+                <div class="agenda-num">03</div>
+                <div class="agenda-who"><span class="agenda-member">Member 3</span><strong data-member-name="3">[Member 3 Name]</strong></div>
+                <div class="agenda-topic">Medium<span>History · Features · Content and audience</span></div>
+                <div class="agenda-slides">09–11</div>
+              </div>
+              <div class="agenda-row">
+                <div class="agenda-num">04</div>
+                <div class="agenda-who"><span class="agenda-member">Member 4</span><strong data-member-name="4">[Member 4 Name]</strong></div>
+                <div class="agenda-topic">Comparison<span>Similarities · Eight criteria · Creation and UX</span></div>
+                <div class="agenda-slides">12–14</div>
+              </div>
+              <div class="agenda-row">
+                <div class="agenda-num">05</div>
+                <div class="agenda-who"><span class="agenda-member">Member 5</span><strong data-member-name="5">[Member 5 Name]</strong></div>
+                <div class="agenda-topic">Evaluation<span>Trade-offs · Best fit · Conclusion and Q&amp;A</span></div>
+                <div class="agenda-slides">15–18</div>
+              </div>
+            </div>
+          </div>
+          <footer class="slide-foot"><span>Tumblr × Medium</span><span class="foot-platform">Agenda</span><span class="foot-num">02</span></footer>
+          <template class="slide-notes">
+            <ul>
+              <li>Preview the hand-off order so each speaker knows exactly when they are up.</li>
+              <li>Point out that slides carry a member badge; use the agenda numbers to keep transitions smooth.</li>
+              <li>The final slide after the conclusion is a source appendix, not part of the spoken presentation.</li>
+            </ul>
+          </template>
+        </section>
+
+        <!-- =====================================================
+             03 — WHAT ARE BLOGGING PLATFORMS?
+             ===================================================== -->
+        <section class="slide neutral" data-title="What is a blogging platform?" data-member-label="Member 1 · Introduction" data-member="1" data-accent="neutral" aria-roledescription="slide" aria-label="What is a blogging platform?">
+          <header class="slide-head">
+            <p class="kicker">The foundation</p>
+            <div class="member-badge"><span class="dot"></span>Member 1 · Introduction</div>
+          </header>
+          <div class="slide-body">
+            <h2>What is a<br>blogging platform?</h2>
+            <p class="lead">A publishing tool <strong>plus</strong> a public home for your words, images, and ideas. It gives anyone a press, a shelf, and an audience without requiring a website build.</p>
+            <div class="three-cards">
+              <article class="info-card">
+                <div class="card-num">01 / PUBLISH</div>
+                <h3>Make it public</h3>
+                <p>Write, format and post in a browser or app. No server setup, no code required.</p>
+              </article>
+              <article class="info-card">
+                <div class="card-num">02 / CONNECT</div>
+                <h3>Build a readership</h3>
+                <p>Profiles, follows, comments, tags and shares turn individual posts into conversation.</p>
+              </article>
+              <article class="info-card">
+                <div class="card-num">03 / DISCOVER</div>
+                <h3>Find an audience</h3>
+                <p>Feeds, search and recommendations help new readers encounter work they did not know to look for.</p>
+              </article>
+            </div>
+          </div>
+          <footer class="slide-foot"><span>Tumblr × Medium</span><span class="foot-platform">Introduction</span><span class="foot-num">03</span></footer>
+          <template class="slide-notes">
+            <ul>
+              <li>Define a blogging platform as hosted publishing software plus social distribution, not just a text editor.</li>
+              <li>Contrast it with a self-hosted website: the platform supplies the hosting, identity, audience and discovery layer.</li>
+              <li>These three jobs — publish, connect, discover — are weighted very differently by Tumblr and Medium.</li>
+            </ul>
+          </template>
+        </section>
+
+        <!-- =====================================================
+             04 — BACKGROUND AND PURPOSE
+             ===================================================== -->
+        <section class="slide compare" data-title="Two answers to the same question" data-member-label="Member 1 · Introduction" data-member="1" data-accent="compare" aria-roledescription="slide" aria-label="Background and purpose of Tumblr and Medium">
+          <header class="slide-head">
+            <p class="kicker">Background &amp; purpose</p>
+            <div class="member-badge"><span class="dot"></span>Member 1 · Introduction</div>
+          </header>
+          <div class="slide-body">
+            <p class="eyebrow">The question both platforms answered</p>
+            <h2>How should people publish<br>on the open web?</h2>
+            <div class="split-with-vs" style="flex:1;margin-top:.3cqw">
+              <article class="platform-panel tumblr">
+                <div class="panel-tag"><span>Tumblr</span><b>Est. 2007</b></div>
+                <h3>Make sharing fast, visual and social.</h3>
+                <p class="panel-copy">David Karp wanted a middle path between a traditional blog and a social network: short bursts, multimedia and reblogs that travel through a community.</p>
+                <div class="panel-chips"><span>Short-form</span><span>Multimedia</span><span>Reblog-first</span></div>
+                <div class="panel-foot"><span>The bet</span>Publishing should feel like participating.</div>
+              </article>
+              <div class="split-vs">vs</div>
+              <article class="platform-panel medium">
+                <div class="panel-tag"><span>Medium</span><b>Est. 2012</b></div>
+                <h3>Make writing thoughtful and reading calm.</h3>
+                <p class="panel-copy">Evan Williams and Biz Stone launched Medium for ideas longer than a status update, with the page designed around the words rather than the feed.</p>
+                <div class="panel-chips"><span>Long-form</span><span>Editor-led</span><span>Reader-funded</span></div>
+                <div class="panel-foot"><span>The bet</span>Publishing should feel like thinking.</div>
+              </article>
+            </div>
+          </div>
+          <footer class="slide-foot"><span>Tumblr × Medium</span><span class="foot-platform">Introduction</span><span class="foot-num">04</span></footer>
+          <template class="slide-notes">
+            <ul>
+              <li>Tumblr emerged from tumblelogs: short-form blogs built for quick, mixed-media posts rather than essays.</li>
+              <li>Medium came from the co-founders of Blogger and Twitter, explicitly designed for writing beyond 140 characters.</li>
+              <li>Frame the rest of the presentation as a consequence of these two different starting assumptions.</li>
+            </ul>
+          </template>
+        </section>
+
+        <!-- =====================================================
+             05 — OVERVIEW
+             ===================================================== -->
+        <section class="slide compare" data-title="Meet the platforms" data-member-label="Member 1 · Introduction" data-member="1" data-accent="compare" aria-roledescription="slide" aria-label="Brief overview of both platforms">
+          <header class="slide-head">
+            <p class="kicker">At a glance</p>
+            <div class="member-badge"><span class="dot"></span>Member 1 · Introduction</div>
+          </header>
+          <div class="slide-body">
+            <h2>Meet the platforms.</h2>
+            <p class="lead">One is a social network with a blog at its centre. The other is a publishing platform with a social layer around it.</p>
+            <div class="platform-split" style="flex:1;margin-top:.2cqw">
+              <article class="platform-panel tumblr">
+                <div class="panel-tag"><span>Tumblr</span><b>tumblr.com</b></div>
+                <h3>A creative social network.</h3>
+                <div class="overview-facts">
+                  <div class="fact-row"><span>Type</span><strong>Microblogging + social</strong></div>
+                  <div class="fact-row"><span>Founded</span><strong>2007 · David Karp</strong></div>
+                  <div class="fact-row"><span>Owner</span><strong>Automattic</strong></div>
+                  <div class="fact-row"><span>Signature</span><strong>The reblog chain</strong></div>
+                </div>
+                <div class="panel-foot">Vibe: loud, creative, communal.</div>
+              </article>
+              <article class="platform-panel medium">
+                <div class="panel-tag"><span>Medium</span><b>medium.com</b></div>
+                <h3>A long-form publishing platform.</h3>
+                <div class="overview-facts">
+                  <div class="fact-row"><span>Type</span><strong>Long-form publishing</strong></div>
+                  <div class="fact-row"><span>Founded</span><strong>2012 · Ev Williams</strong></div>
+                  <div class="fact-row"><span>Owner</span><strong>A Medium Corporation</strong></div>
+                  <div class="fact-row"><span>Signature</span><strong>The clean story page</strong></div>
+                </div>
+                <div class="panel-foot">Vibe: calm, curated, professional.</div>
+              </article>
+            </div>
+          </div>
+          <footer class="slide-foot"><span>Tumblr × Medium</span><span class="foot-platform">Introduction</span><span class="foot-num">05</span></footer>
+          <template class="slide-notes">
+            <ul>
+              <li>Use this slide as the mental map: Tumblr is feed-first, Medium is article-first.</li>
+              <li>Both are free to join and both mix publishing with social features; the emphasis is what differs.</li>
+              <li>Do not read every fact aloud — let the audience scan while you set up the platform sections.</li>
+            </ul>
+          </template>
+        </section>
+
+        <!-- =====================================================
+             06 — TUMBLR HISTORY
+             ===================================================== -->
+        <section class="slide platform-tumblr" data-title="Tumblr: a timeline of reinvention" data-member-label="Member 2 · Tumblr" data-member="2" data-accent="tumblr" aria-roledescription="slide" aria-label="Tumblr history and background">
+          <header class="slide-head">
+            <p class="kicker">Tumblr · History</p>
+            <div class="member-badge"><span class="dot"></span>Member 2 · Tumblr</div>
+          </header>
+          <div class="slide-body">
+            <p class="eyebrow">From dorm-room idea to internet institution</p>
+            <h2>A timeline of<br>reinvention.</h2>
+            <div class="timeline timeline--split">
+              <article class="timeline-item"><div class="timeline-year">2007</div><h3>David Karp launches Tumblr</h3><p>A short-form alternative to conventional blogging goes live in February.</p></article>
+              <article class="timeline-item"><div class="timeline-year">2013</div><h3>Yahoo pays $1.1B</h3><p>One of the defining acquisitions of the social-media era.</p></article>
+              <article class="timeline-item"><div class="timeline-year">2017</div><h3>Verizon takes over</h3><p>Tumblr changes hands again as Verizon absorbs Yahoo.</p></article>
+              <article class="timeline-item"><div class="timeline-year">2018</div><h3>The adult-content ban</h3><p>A policy shift triggers a major community and traffic exodus.</p></article>
+              <article class="timeline-item"><div class="timeline-year">2019</div><h3>Automattic acquires it</h3><p>The WordPress.com owner buys Tumblr from Verizon.</p></article>
+            </div>
+          </div>
+          <footer class="slide-foot"><span>Tumblr × Medium</span><span class="foot-platform">Tumblr</span><span class="foot-num">06</span></footer>
+          <template class="slide-notes">
+            <ul>
+              <li>David Karp built Tumblr after waiting for established platforms to invent a short-form “tumblelog” format.</li>
+              <li>The Yahoo and Verizon years brought scale but also strategic drift; the 2018 adult-content ban is a turning point in the community's history.</li>
+              <li>Automattic has owned Tumblr since 2019, positioning it alongside WordPress as another publishing tool.</li>
+            </ul>
+          </template>
+        </section>
+
+        <!-- =====================================================
+             07 — TUMBLR FEATURES
+             ===================================================== -->
+        <section class="slide platform-tumblr" data-title="Tumblr: built for the reblog" data-member-label="Member 2 · Tumblr" data-member="2" data-accent="tumblr" aria-roledescription="slide" aria-label="Tumblr main features and functions">
+          <header class="slide-head">
+            <p class="kicker">Tumblr · Features</p>
+            <div class="member-badge"><span class="dot"></span>Member 2 · Tumblr</div>
+          </header>
+          <div class="slide-body">
+            <p class="eyebrow">The core loop</p>
+            <h2>Built for the reblog.</h2>
+            <p class="lead">Post → reblog → remix. Tumblr's features all push content through a living social feed rather than a single polished page.</p>
+            <div class="feature-grid">
+              <article class="feature"><div class="f-num">01</div><h3>Multimedia posts</h3><p>Text, photos, GIFs, quotes, links, audio and video share one lightweight editor.</p><span class="f-tag">Express</span></article>
+              <article class="feature"><div class="f-num">02</div><h3>Reblog chains</h3><p>Share a post and add commentary; the conversation travels with the content.</p><span class="f-tag">Circulate</span></article>
+              <article class="feature"><div class="f-num">03</div><h3>Tags &amp; dashboard</h3><p>Follow tags and blogs to build a personal, constantly refreshing feed.</p><span class="f-tag">Discover</span></article>
+              <article class="feature"><div class="f-num">04</div><h3>Queue &amp; schedule</h3><p>Stagger posts across hours or days to keep a blog active.</p><span class="f-tag">Sustain</span></article>
+              <article class="feature"><div class="f-num">05</div><h3>Custom themes</h3><p>Use HTML and CSS to give a blog a distinctive visual identity.</p><span class="f-tag">Personalise</span></article>
+            </div>
+            <div class="feature-quote"><span class="q-mark">“</span><p>The platform's real unit is not the page. <span>It is the post in motion.</span></p></div>
+          </div>
+          <footer class="slide-foot"><span>Tumblr × Medium</span><span class="foot-platform">Tumblr</span><span class="foot-num">07</span></footer>
+          <template class="slide-notes">
+            <ul>
+              <li>Reblogging is the defining mechanic: it is both sharing and authorship, because users can add commentary to the chain.</li>
+              <li>Tags and the dashboard create discovery without a central editor or algorithmic homepage.</li>
+              <li>Custom themes are unusually deep for a social platform, making Tumblr blogs feel like personal sites.</li>
+            </ul>
+          </template>
+        </section>
+
+        <!-- =====================================================
+             08 — TUMBLR CONTENT AND AUDIENCE
+             ===================================================== -->
+        <section class="slide platform-tumblr" data-title="Tumblr: fandoms and self-expression" data-member-label="Member 2 · Tumblr" data-member="2" data-accent="tumblr" aria-roledescription="slide" aria-label="Tumblr content types and target audience">
+          <header class="slide-head">
+            <p class="kicker">Tumblr · Content &amp; audience</p>
+            <div class="member-badge"><span class="dot"></span>Member 2 · Tumblr</div>
+          </header>
+          <div class="slide-body">
+            <h2>A home for fandoms<br>and self-expression.</h2>
+            <div class="audience-layout" style="flex:1;margin-top:.4cqw">
+              <div class="content-cluster">
+                <div class="cluster-label">What gets shared</div>
+                <div class="tag-cloud">
+                  <span class="tag large">Fan art</span><span class="tag">Fanfiction</span><span class="tag">GIFs</span><span class="tag large">Memes</span><span class="tag">Moodboards</span><span class="tag">Music</span><span class="tag">Text posts</span><span class="tag">Aesthetics</span><span class="tag">Niche commentary</span><span class="tag">Photography</span>
+                </div>
+                <div class="content-statement">Less a publishing tool,<br>more a place to belong.</div>
+                <div class="creative-stat"><strong>60%</strong><span>of Tumblr users identify as creative — higher than any other social platform, per Tumblr's 2024 audience data.</span></div>
+              </div>
+              <aside class="audience-card">
+                <div class="ac-label">Who is here</div>
+                <div class="ac-title">Young, creative, community-led.</div>
+                <div class="audience-list">
+                  <div class="audience-item"><span class="ai-num">01</span><p>Gen Z and millennial users seeking a less polished social internet.</p></div>
+                  <div class="audience-item"><span class="ai-num">02</span><p>Fandoms, artists, writers, curators and niche subcultures.</p></div>
+                  <div class="audience-item"><span class="ai-num">03</span><p>Pseudonymous blogs where identity and taste matter more than real names.</p></div>
+                </div>
+                <div class="ac-foot">Discovery happens through tags, reblogs and the people you follow — not a single front page.</div>
+              </aside>
+            </div>
+          </div>
+          <footer class="slide-foot"><span>Tumblr × Medium</span><span class="foot-platform">Tumblr</span><span class="foot-num">08</span></footer>
+          <template class="slide-notes">
+            <ul>
+              <li>Tumblr's centre of gravity is fandom: fan art, fanfiction, GIF sets, memes and aesthetic curation.</li>
+              <li>Its audience skews young and creative, and pseudonymous identity is a feature rather than a bug.</li>
+              <li>The 60% creative figure comes from Tumblr's own advertising audience research; present it as platform-reported data.</li>
+            </ul>
+          </template>
+        </section>
+
+        <!-- =====================================================
+             09 — MEDIUM HISTORY
+             ===================================================== -->
+        <section class="slide platform-medium" data-title="Medium: a decade of refining the read" data-member-label="Member 3 · Medium" data-member="3" data-accent="medium" aria-roledescription="slide" aria-label="Medium history and background">
+          <header class="slide-head">
+            <p class="kicker">Medium · History</p>
+            <div class="member-badge"><span class="dot"></span>Member 3 · Medium</div>
+          </header>
+          <div class="slide-body">
+            <p class="eyebrow">From Twitter co-founders to a writer-funded platform</p>
+            <h2>A decade of refining<br>the read.</h2>
+            <div class="timeline timeline--split">
+              <article class="timeline-item"><div class="timeline-year">2012</div><h3>Medium opens in beta</h3><p>Evan Williams and Biz Stone launch a clean home for longer writing.</p></article>
+              <article class="timeline-item"><div class="timeline-year">2017</div><h3>The Partner Program</h3><p>Reader memberships begin funding writers directly.</p></article>
+              <article class="timeline-item"><div class="timeline-year">2021</div><h3>A writer-first pivot</h3><p>Medium scales back in-house publications and backs independent voices.</p></article>
+              <article class="timeline-item"><div class="timeline-year">2022</div><h3>New leadership</h3><p>Tony Stubblebine becomes CEO; Ev Williams moves to chairman.</p></article>
+              <article class="timeline-item"><div class="timeline-year">Today</div><h3>100M+ monthly</h3><p>Medium reports more than 100 million people connecting each month.</p></article>
+            </div>
+          </div>
+          <footer class="slide-foot"><span>Tumblr × Medium</span><span class="foot-platform">Medium</span><span class="foot-num">09</span></footer>
+          <template class="slide-notes">
+            <ul>
+              <li>Medium launched in August 2012 through Obvious, the studio co-founded by Evan Williams and Biz Stone.</li>
+              <li>The Partner Program in 2017 was the strategic turning point: readers pay, and writers share the revenue.</li>
+              <li>Medium remains privately held under A Medium Corporation; it was not acquired by a larger platform.</li>
+            </ul>
+          </template>
+        </section>
+
+        <!-- =====================================================
+             10 — MEDIUM FEATURES
+             ===================================================== -->
+        <section class="slide platform-medium" data-title="Medium: designed for the considered read" data-member-label="Member 3 · Medium" data-member="3" data-accent="medium" aria-roledescription="slide" aria-label="Medium main features and functions">
+          <header class="slide-head">
+            <p class="kicker">Medium · Features</p>
+            <div class="member-badge"><span class="dot"></span>Member 3 · Medium</div>
+          </header>
+          <div class="slide-body">
+            <p class="eyebrow">Tools for depth</p>
+            <h2>Designed for the<br>considered read.</h2>
+            <div class="feature-layout" style="flex:1;margin-top:.4cqw">
+              <div class="feature-list">
+                <div class="feature-row"><div class="fr-num">01</div><div><h3>Focused editor</h3><p>A clean writing surface with restrained typography and formatting.</p></div><div class="fr-meta">Write</div></div>
+                <div class="feature-row"><div class="fr-num">02</div><div><h3>Publications</h3><p>Themed magazines and shared spaces with editors, contributors and submissions.</p></div><div class="fr-meta">Collaborate</div></div>
+                <div class="feature-row"><div class="fr-num">03</div><div><h3>Claps, highlights, responses</h3><p>Readers react at paragraph level and reward writers with visible engagement.</p></div><div class="fr-meta">Engage</div></div>
+                <div class="feature-row"><div class="fr-num">04</div><div><h3>Topics, follows and Boost</h3><p>Recommendations and human curation help strong stories travel further.</p></div><div class="fr-meta">Discover</div></div>
+                <div class="feature-row"><div class="fr-num">05</div><div><h3>Partner Program &amp; member perks</h3><p>Writers earn from member reading time; members get audio, offline reading and custom domains.</p></div><div class="fr-meta">Sustain</div></div>
+              </div>
+              <aside class="reading-loop">
+                <div class="rl-label">The reading loop</div>
+                <h3>Read.<br>Respond.<br>Return.</h3>
+                <div class="loop-steps">
+                  <div class="loop-step"><span class="ls-dot"></span>Open a story — no sidebar noise.</div>
+                  <div class="loop-step"><span class="ls-dot"></span>Clap or highlight a specific passage.</div>
+                  <div class="loop-step"><span class="ls-dot"></span>Follow the writer into the next idea.</div>
+                </div>
+                <div class="rl-foot">The page is the product.</div>
+              </aside>
+            </div>
+          </div>
+          <footer class="slide-foot"><span>Tumblr × Medium</span><span class="foot-platform">Medium</span><span class="foot-num">10</span></footer>
+          <template class="slide-notes">
+            <ul>
+              <li>Medium's feature set is organised around writing and reading quality, not rapid sharing.</li>
+              <li>Publications add editorial structure; claps, highlights and responses make engagement feel literary rather than viral.</li>
+              <li>The Partner Program and membership perks show how the business model is baked into the product experience.</li>
+            </ul>
+          </template>
+        </section>
+
+        <!-- =====================================================
+             11 — MEDIUM CONTENT AND AUDIENCE
+             ===================================================== -->
+        <section class="slide platform-medium" data-title="Medium: expertise and long-form ideas" data-member-label="Member 3 · Medium" data-member="3" data-accent="medium" aria-roledescription="slide" aria-label="Medium content types and target audience">
+          <header class="slide-head">
+            <p class="kicker">Medium · Content &amp; audience</p>
+            <div class="member-badge"><span class="dot"></span>Member 3 · Medium</div>
+          </header>
+          <div class="slide-body">
+            <h2>Expertise, narrative<br>and long-form ideas.</h2>
+            <div class="audience-layout" style="flex:1;margin-top:.4cqw">
+              <div class="content-cluster">
+                <div class="cluster-label">What gets published</div>
+                <div class="tag-cloud">
+                  <span class="tag large">Essays</span><span class="tag">Technology</span><span class="tag">Business</span><span class="tag large">Personal stories</span><span class="tag">Self-improvement</span><span class="tag">Culture</span><span class="tag">Reporting</span><span class="tag">Poetry</span><span class="tag">Design</span><span class="tag">Research</span>
+                </div>
+                <div class="content-statement">Optimised for the considered read,<br>not the quick scroll.</div>
+                <div class="creative-stat"><strong>100M+</strong><span>people connect and share on Medium every month, according to the platform.</span></div>
+              </div>
+              <aside class="audience-card">
+                <div class="ac-label">Who is here</div>
+                <div class="ac-title">Professional, curious, global.</div>
+                <div class="audience-list">
+                  <div class="audience-item"><span class="ai-num">01</span><p>Writers, experts and operators building a body of work.</p></div>
+                  <div class="audience-item"><span class="ai-num">02</span><p>Professionals and lifelong learners looking for depth, not chatter.</p></div>
+                  <div class="audience-item"><span class="ai-num">03</span><p>Readers arriving through search, topics, publications and shares.</p></div>
+                </div>
+                <div class="ac-foot">A story can live as a portfolio piece, a company thought-leadership asset or a search-friendly explainer.</div>
+              </aside>
+            </div>
+          </div>
+          <footer class="slide-foot"><span>Tumblr × Medium</span><span class="foot-platform">Medium</span><span class="foot-num">11</span></footer>
+          <template class="slide-notes">
+            <ul>
+              <li>Medium's content is text-led: essays, analysis, personal narratives and expertise-driven pieces.</li>
+              <li>Its audience is better described as professional and curious than by a single age bracket.</li>
+              <li>Search and external sharing matter more on Medium; on Tumblr, the internal reblog network is the main engine.</li>
+            </ul>
+          </template>
+        </section>
+
+        <!-- =====================================================
+             12 — SIMILARITIES
+             ===================================================== -->
+        <section class="slide compare" data-title="More alike than the surface suggests" data-member-label="Member 4 · Comparison" data-member="4" data-accent="compare" aria-roledescription="slide" aria-label="Similarities between Tumblr and Medium">
+          <header class="slide-head">
+            <p class="kicker">Comparison · Similarities</p>
+            <div class="member-badge"><span class="dot"></span>Member 4 · Comparison</div>
+          </header>
+          <div class="slide-body">
+            <p class="eyebrow">Shared DNA</p>
+            <h2>More alike than<br>the surface suggests.</h2>
+            <div class="similarity-layout" style="flex:1;margin-top:.1cqw">
+              <div class="venn" aria-hidden="true">
+                <div class="venn-circle left"></div>
+                <div class="venn-circle right"></div>
+                <div class="venn-label left">Tumblr</div>
+                <div class="venn-label right">Medium</div>
+                <div class="venn-center">Shared<br>ground</div>
+              </div>
+              <div class="similarity-list">
+                <div class="similarity-item"><span class="si-num">01</span><h3>Free to start</h3><p>Both are freemium: publish without paying, upgrade for more.</p></div>
+                <div class="similarity-item"><span class="si-num">02</span><h3>Follow + discover</h3><p>Tumblr uses tags; Medium uses topics, publications and curation.</p></div>
+                <div class="similarity-item"><span class="si-num">03</span><h3>Social feedback</h3><p>Reblogs, claps, highlights and replies all signal attention.</p></div>
+                <div class="similarity-item"><span class="si-num">04</span><h3>Writing as identity</h3><p>Profiles function as public bodies of work and creative homes.</p></div>
+                <div class="similarity-item"><span class="si-num">05</span><h3>Community + curation</h3><p>Neither is purely algorithmic; people and editors shape reach.</p></div>
+              </div>
+            </div>
+          </div>
+          <footer class="slide-foot"><span>Tumblr × Medium</span><span class="foot-platform">Comparison</span><span class="foot-num">12</span></footer>
+          <template class="slide-notes">
+            <ul>
+              <li>Start by agreeing on what the platforms share; this prevents the comparison from becoming a simple popularity contest.</li>
+              <li>Both rely on a freemium model and on social signals to distribute work, but the signals look very different.</li>
+              <li>The shared ground is publishing plus community; the difference is the rhythm and the intended reader.</li>
+            </ul>
+          </template>
+        </section>
+
+        <!-- =====================================================
+             13 — COMPARISON TABLE
+             ===================================================== -->
+        <section class="slide compare" data-title="Eight criteria, side by side" data-member-label="Member 4 · Comparison" data-member="4" data-accent="compare" aria-roledescription="slide" aria-label="Comparison table across eight criteria">
+          <header class="slide-head">
+            <p class="kicker">Comparison · Criteria</p>
+            <div class="member-badge"><span class="dot"></span>Member 4 · Comparison</div>
+          </header>
+          <div class="slide-body">
+            <h2>Eight criteria, side by side.</h2>
+            <div class="table-wrap">
+              <table class="compare">
+                <colgroup><col class="criteria"><col class="tumblr-col"><col class="medium-col"></colgroup>
+                <thead><tr><th scope="col">Criteria</th><th scope="col" class="t-head">Tumblr</th><th scope="col" class="m-head">Medium</th></tr></thead>
+                <tbody>
+                  <tr><th scope="row">Purpose</th><td class="t-cell">Express, share and remix — fast</td><td class="m-cell">Publish ideas — deeply and credibly</td></tr>
+                  <tr><th scope="row">Interface</th><td class="t-cell">Feed-first dashboard</td><td class="m-cell">Article-first reading page</td></tr>
+                  <tr><th scope="row">Content type</th><td class="t-cell">Short-form, visual, multimedia</td><td class="m-cell">Long-form, text-led essays</td></tr>
+                  <tr><th scope="row">Creation &amp; sharing</th><td class="t-cell">Post or reblog in seconds; tags + queue</td><td class="m-cell">Draft, publish, submit; publications + links</td></tr>
+                  <tr><th scope="row">Monetization</th><td class="t-cell">Ads, Premium, Blaze; limited creator pay</td><td class="m-cell">Membership + Partner Program; no display ads</td></tr>
+                  <tr><th scope="row">Audience</th><td class="t-cell">Gen Z, fandoms, creatives</td><td class="m-cell">Professionals, experts, learners</td></tr>
+                  <tr><th scope="row">Customization</th><td class="t-cell">Deep HTML/CSS blog themes</td><td class="m-cell">Minimal formatting; custom domain</td></tr>
+                  <tr><th scope="row">User experience</th><td class="t-cell">Social, spontaneous, chaotic</td><td class="m-cell">Calm, curated, deliberate</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="table-key"><span>Tumblr optimises for momentum.</span><span>Medium optimises for attention.</span></div>
+          </div>
+          <footer class="slide-foot"><span>Tumblr × Medium</span><span class="foot-platform">Comparison</span><span class="foot-num">13</span></footer>
+          <template class="slide-notes">
+            <ul>
+              <li>Walk the table by contrast, not row by row: speed versus depth, remixing versus authorship, feed versus page.</li>
+              <li>The monetization row is the clearest structural difference: Tumblr is ad-led, Medium is reader-subscription-led.</li>
+              <li>Invite the audience to notice that neither column is inherently better; each is a design choice.</li>
+            </ul>
+          </template>
+        </section>
+
+        <!-- =====================================================
+             14 — CREATION/SHARING + UX
+             ===================================================== -->
+        <section class="slide compare" data-title="How it feels to make and share" data-member-label="Member 4 · Comparison" data-member="4" data-accent="compare" aria-roledescription="slide" aria-label="Content creation, sharing and user experience side by side">
+          <header class="slide-head">
+            <p class="kicker">Comparison · In practice</p>
+            <div class="member-badge"><span class="dot"></span>Member 4 · Comparison</div>
+          </header>
+          <div class="slide-body">
+            <p class="eyebrow">Same acts, different sensations</p>
+            <h2>How it feels to make<br>and share.</h2>
+            <div class="matrix">
+              <div class="matrix-head"><div></div><div class="mh-t">Tumblr</div><div class="mh-m">Medium</div></div>
+              <div class="matrix-row">
+                <div class="matrix-label">Content creation &amp; sharing</div>
+                <div class="matrix-cell t-cell"><div class="mc-title">Create in the flow</div><p>Post or reblog in seconds, add a caption, tag it and send it into the dashboard. Queue tools keep a blog moving even when you are not online.</p><div class="mc-tags"><span>one-click</span><span>reblog</span><span>queue</span><span>tags</span></div></div>
+                <div class="matrix-cell m-cell"><div class="mc-title">Compose with intent</div><p>Draft in a quiet editor, shape the argument, then publish to a profile or submit to a publication. Sharing means sending a link or earning curation.</p><div class="mc-tags"><span>draft</span><span>edit</span><span>publication</span><span>link</span></div></div>
+              </div>
+              <div class="matrix-row">
+                <div class="matrix-label">User experience</div>
+                <div class="matrix-cell t-cell"><div class="mc-title">A living room</div><p>The dashboard feels spontaneous and social. Discovery is messy but personal: tags, reblog chains and the people you follow create the vibe.</p><div class="mc-tags"><span>feed</span><span>community</span><span>chaos</span></div></div>
+                <div class="matrix-cell m-cell"><div class="mc-title">A reading room</div><p>The article page is calm and legible. Topics and curation guide you toward depth; claps and highlights make reading feel reciprocal.</p><div class="mc-tags"><span>quiet</span><span>curated</span><span>focused</span></div></div>
+              </div>
+            </div>
+          </div>
+          <footer class="slide-foot"><span>Tumblr × Medium</span><span class="foot-platform">Comparison</span><span class="foot-num">14</span></footer>
+          <template class="slide-notes">
+            <ul>
+              <li>Contrast the loops: Tumblr rewards immediacy and reinterpretation; Medium rewards composition and completion.</li>
+              <li>“Living room” versus “reading room” is the quickest way to explain the emotional difference in user experience.</li>
+              <li>Ask the audience which experience they would choose for a personal project versus a professional one.</li>
+            </ul>
+          </template>
+        </section>
+
+        <!-- =====================================================
+             15 — ADVANTAGES AND DISADVANTAGES
+             ===================================================== -->
+        <section class="slide compare" data-title="The honest scorecard" data-member-label="Member 5 · Evaluation" data-member="5" data-accent="compare" aria-roledescription="slide" aria-label="Advantages and disadvantages of both platforms">
+          <header class="slide-head">
+            <p class="kicker">Evaluation · Trade-offs</p>
+            <div class="member-badge"><span class="dot"></span>Member 5 · Evaluation</div>
+          </header>
+          <div class="slide-body">
+            <p class="eyebrow">No platform wins every category</p>
+            <h2>The honest scorecard.</h2>
+            <p class="lead">What each platform gives you — and what it asks in return.</p>
+            <div class="scorecard">
+              <div class="score-col tumblr">
+                <div class="score-head"><strong>Tumblr</strong><span>Social &amp; creative</span></div>
+                <div class="score-row"><div class="s-label">What works</div><p>Fast creative expression; reblogs create free distribution; deep community and identity.</p></div>
+                <div class="score-row watch"><div class="s-label">What to watch</div><p>Limited direct earnings; ad-supported experience; moderation and policy shifts can reshape the community.</p></div>
+                <div class="score-row"><div class="s-label">Best for</div><p>Fandoms, art, memes, moodboards and community-led projects.</p></div>
+              </div>
+              <div class="score-col medium">
+                <div class="score-head"><strong>Medium</strong><span>Professional &amp; long-form</span></div>
+                <div class="score-row"><div class="s-label">What works</div><p>Credible long-form; calm reading; a Partner Program that pays writers from membership revenue.</p></div>
+                <div class="score-row watch"><div class="s-label">What to watch</div><p>The paywall can cap reach; curation is competitive; design control is intentionally limited.</p></div>
+                <div class="score-row"><div class="s-label">Best for</div><p>Essays, expertise, portfolios and professional publishing.</p></div>
+              </div>
+            </div>
+          </div>
+          <footer class="slide-foot"><span>Tumblr × Medium</span><span class="foot-platform">Evaluation</span><span class="foot-num">15</span></footer>
+          <template class="slide-notes">
+            <ul>
+              <li>Be balanced: Tumblr's community strength is real, but its direct creator monetization is limited.</li>
+              <li>Medium's credibility and reading experience come with a paywall and curation pressure.</li>
+              <li>The “watch” row matters most for a recommendation: the trade-off should match the presenter's purpose.</li>
+            </ul>
+          </template>
+        </section>
+
+        <!-- =====================================================
+             16 — WHICH PLATFORM FITS
+             ===================================================== -->
+        <section class="slide compare" data-title="Which platform fits the work?" data-member-label="Member 5 · Evaluation" data-member="5" data-accent="compare" aria-roledescription="slide" aria-label="Which platform suits which purpose">
+          <header class="slide-head">
+            <p class="kicker">Evaluation · Best fit</p>
+            <div class="member-badge"><span class="dot"></span>Member 5 · Evaluation</div>
+          </header>
+          <div class="slide-body">
+            <p class="eyebrow">A practical decision</p>
+            <h2>Which platform<br>fits the work?</h2>
+            <div class="decision">
+              <article class="decision-card tumblr">
+                <div class="dc-kicker">Choose Tumblr if…</div>
+                <h3>You want culture<br>in motion.</h3>
+                <div class="decision-list">
+                  <div class="decision-item"><span>01</span><p>You are building a fandom, creative community or aesthetic world.</p></div>
+                  <div class="decision-item"><span>02</span><p>Your work is visual, short, remixable or pseudonymous.</p></div>
+                  <div class="decision-item"><span>03</span><p>You want personality and participation more than polish.</p></div>
+                </div>
+              </article>
+              <article class="decision-card medium">
+                <div class="dc-kicker">Choose Medium if…</div>
+                <h3>You want ideas<br>to carry weight.</h3>
+                <div class="decision-list">
+                  <div class="decision-item"><span>01</span><p>You are building expertise, a professional brand or a portfolio.</p></div>
+                  <div class="decision-item"><span>02</span><p>Your ideas need length, structure and search visibility.</p></div>
+                  <div class="decision-item"><span>03</span><p>You want a route to earning from writing through membership.</p></div>
+                </div>
+              </article>
+            </div>
+            <div class="overlap"><strong>The overlap:</strong> personal essays, culture writing, advice and portfolios can work on either platform — choose the audience you want to reach first.</div>
+          </div>
+          <footer class="slide-foot"><span>Tumblr × Medium</span><span class="foot-platform">Evaluation</span><span class="foot-num">16</span></footer>
+          <template class="slide-notes">
+            <ul>
+              <li>Turn the comparison into a decision rule: community and remix point to Tumblr; expertise and long-form point to Medium.</li>
+              <li>Use a concrete example such as a fan artist versus a product designer writing a case study.</li>
+              <li>Acknowledge the overlap — many creators use both, treating Tumblr as community and Medium as portfolio.</li>
+            </ul>
+          </template>
+        </section>
+
+        <!-- =====================================================
+             17 — CONCLUSION
+             ===================================================== -->
+        <section class="slide slide--conclusion" data-title="Conclusion" data-member-label="Member 5 · Evaluation" data-member="5" data-accent="compare" aria-roledescription="slide" aria-label="Overall conclusion">
+          <header class="slide-head">
+            <p class="kicker">Conclusion</p>
+            <div class="member-badge"><span class="dot"></span>Member 5 · Evaluation</div>
+          </header>
+          <div class="slide-body" style="padding-top:0">
+            <div class="conclusion-main">
+              <div class="c-overline">The takeaway</div>
+              <h2><span class="line-one">Tumblr builds culture.</span><br><span class="line-two">Medium builds credibility.</span></h2>
+              <p class="c-sub">They are not rivals so much as different tools for different jobs. The right choice depends on the audience, the format and what you want the work to do.</p>
+            </div>
+            <div class="conclusion-grid">
+              <div class="conclusion-card"><span class="cc-num">01 / AUDIENCE</span><strong>Know who you want to reach.</strong><p>Go where your readers already gather — not where the platform is loudest.</p></div>
+              <div class="conclusion-card"><span class="cc-num">02 / FORMAT</span><strong>Match the medium.</strong><p>Short and visual needs momentum; complex and considered needs room.</p></div>
+              <div class="conclusion-card"><span class="cc-num">03 / PURPOSE</span><strong>Measure what matters.</strong><p>Reach, belonging, credibility and income are different goals.</p></div>
+            </div>
+          </div>
+          <footer class="slide-foot"><span>Tumblr × Medium</span><span class="foot-platform">Evaluation</span><span class="foot-num">17</span></footer>
+          <template class="slide-notes">
+            <ul>
+              <li>Land the thesis clearly: Tumblr is a culture engine, Medium is a credibility engine.</li>
+              <li>Tie the conclusion back to the audience: the platform choice should follow the job the creator needs done.</li>
+              <li>End with the three decision filters — audience, format, purpose — so the comparison feels actionable.</li>
+            </ul>
+          </template>
+        </section>
+
+        <!-- =====================================================
+             18 — THANK YOU / Q&A
+             ===================================================== -->
+        <section class="slide slide--thanks" data-title="Thank you and Q&amp;A" data-member-label="Member 5 · Evaluation" data-member="5" data-accent="compare" aria-roledescription="slide" aria-label="Thank you and questions">
+          <header class="slide-head">
+            <p class="kicker">Thank you</p>
+            <div class="member-badge"><span class="dot"></span>Member 5 · Evaluation</div>
+          </header>
+          <div class="slide-body" style="padding-top:0">
+            <div class="thanks-layout">
+              <div class="thanks-main">
+                <h2>Thank you<span>.</span></h2>
+                <p>Questions, challenges and counter-examples are welcome. The comparison is more interesting when the room disagrees.</p>
+              </div>
+              <aside class="thanks-card">
+                <div class="tc-label">Open the discussion</div>
+                <h3>Ask us about…</h3>
+                <div class="thanks-lines">
+                  <div class="thanks-line"><span>→</span>The ownership and policy history behind each platform.</div>
+                  <div class="thanks-line"><span>→</span>Which features matter most for a creator's actual goal.</div>
+                  <div class="thanks-line"><span>→</span>Where the two platforms overlap — and where they do not.</div>
+                </div>
+              </aside>
+            </div>
+            <div class="thanks-foot">
+              <div class="tf-group" data-group>[Group Name] · Five-member presentation</div>
+              <div class="tf-next">Sources follow →</div>
+            </div>
+          </div>
+          <footer class="slide-foot"><span>Tumblr × Medium</span><span class="foot-platform">Q&amp;A</span><span class="foot-num">18</span></footer>
+          <template class="slide-notes">
+            <ul>
+              <li>Thank the audience and pause before inviting questions; give people a moment to formulate one.</li>
+              <li>If the room is quiet, use the prompts on the right to start a discussion.</li>
+              <li>Keep the source slide available for anyone who wants the evidence behind a claim.</li>
+            </ul>
+          </template>
+        </section>
+
+        <!-- =====================================================
+             19 — SOURCES
+             ===================================================== -->
+        <section class="slide neutral" data-title="Sources" data-member-label="All members" data-member="1" data-accent="neutral" aria-roledescription="slide" aria-label="Sources and references">
+          <header class="slide-head">
+            <p class="kicker">Appendix · Sources</p>
+            <div class="member-badge"><span class="dot"></span>All members</div>
+          </header>
+          <div class="slide-body">
+            <div class="sources-intro">
+              <div>
+                <h2 style="font-size:3.5cqw;margin-bottom:.6cqw">Sources.</h2>
+                <p>Official platform documentation was used for product and pricing claims; contemporaneous reporting and encyclopedic references were used for history and ownership.</p>
+              </div>
+              <div class="accessed">Accessed Nov 2026</div>
+            </div>
+            <div class="sources-grid">
+              <div class="source-group">
+                <h3>Platform documentation</h3>
+                <div class="source-list">
+                  <div class="source-item"><span class="src-num">01</span><div><strong>Tumblr Help — Tumblr Premium</strong><a href="https://help.tumblr.com/knowledge-base/premium/" target="_blank" rel="noopener">help.tumblr.com/knowledge-base/premium/</a></div></div>
+                  <div class="source-item"><span class="src-num">02</span><div><strong>Tumblr Help — Blaze FAQ</strong><a href="https://help.tumblr.com/knowledge-base/blaze-faq/" target="_blank" rel="noopener">help.tumblr.com/knowledge-base/blaze-faq/</a></div></div>
+                  <div class="source-item"><span class="src-num">03</span><div><strong>Tumblr Help — Reblogs</strong><a href="https://help.tumblr.com/knowledge-base/reblogs/" target="_blank" rel="noopener">help.tumblr.com/knowledge-base/reblogs/</a></div></div>
+                  <div class="source-item"><span class="src-num">04</span><div><strong>Tumblr Help — Queued Posts</strong><a href="https://help.tumblr.com/knowledge-base/queued-posts/" target="_blank" rel="noopener">help.tumblr.com/knowledge-base/queued-posts/</a></div></div>
+                  <div class="source-item"><span class="src-num">05</span><div><strong>Tumblr Help — Customizing Your Theme</strong><a href="https://help.tumblr.com/knowledge-base/customizing-your-theme/" target="_blank" rel="noopener">help.tumblr.com/knowledge-base/customizing-your-theme/</a></div></div>
+                  <div class="source-item"><span class="src-num">06</span><div><strong>Tumblr Advertising — Audience</strong><a href="https://advertise.tumblr.com/audience/" target="_blank" rel="noopener">advertise.tumblr.com/audience/</a></div></div>
+                  <div class="source-item"><span class="src-num">07</span><div><strong>Medium — About</strong><a href="https://medium.com/about" target="_blank" rel="noopener">medium.com/about</a></div></div>
+                  <div class="source-item"><span class="src-num">08</span><div><strong>Medium Help — Become a Member</strong><a href="https://help.medium.com/hc/en-us/articles/115004545567-Become-a-Medium-Member" target="_blank" rel="noopener">help.medium.com/hc/en-us/articles/115004545567-Become-a-Medium-Member</a></div></div>
+                  <div class="source-item"><span class="src-num">09</span><div><strong>Medium Help — Partner Program Guide</strong><a href="https://help.medium.com/hc/en-us/articles/115011694187-Partner-Program-Guide" target="_blank" rel="noopener">help.medium.com/hc/en-us/articles/115011694187-Partner-Program-Guide</a></div></div>
+                </div>
+              </div>
+              <div class="source-group">
+                <h3>History, ownership &amp; context</h3>
+                <div class="source-list">
+                  <div class="source-item"><span class="src-num">10</span><div><strong>Wikipedia — Tumblr</strong><a href="https://en.wikipedia.org/wiki/Tumblr" target="_blank" rel="noopener">en.wikipedia.org/wiki/Tumblr</a></div></div>
+                  <div class="source-item"><span class="src-num">11</span><div><strong>Wikipedia — Medium (website)</strong><a href="https://en.wikipedia.org/wiki/Medium_(website)" target="_blank" rel="noopener">en.wikipedia.org/wiki/Medium_(website)</a></div></div>
+                  <div class="source-item"><span class="src-num">12</span><div><strong>CNBC — Verizon sells Tumblr to WordPress owner</strong><a href="https://www.cnbc.com/2019/08/12/verizon-sells-tumblr-to-wordpress-owner-six-years-1point1-billion-deal.html" target="_blank" rel="noopener">cnbc.com/2019/08/12/verizon-sells-tumblr-to-wordpress-owner-six-years-1point1-billion-deal.html</a></div></div>
+                  <div class="source-item"><span class="src-num">13</span><div><strong>Wired — How Yahoo's policies pushed Tumblr into obscurity</strong><a href="https://www.wired.com/story/tumblr-sold-to-wordpress/" target="_blank" rel="noopener">wired.com/story/tumblr-sold-to-wordpress/</a></div></div>
+                  <div class="source-item"><span class="src-num">14</span><div><strong>The Verge — Medium launches in private beta</strong><a href="https://www.theverge.com/2012/8/14/3243311/medium-publishing-platform-private-beta" target="_blank" rel="noopener">theverge.com/2012/8/14/3243311/medium-publishing-platform-private-beta</a></div></div>
+                  <div class="source-item"><span class="src-num">15</span><div><strong>Medium Blog — Tony Stubblebine named CEO</strong><a href="https://medium.com/blog/medium-names-technology-and-digital-media-veteran-tony-stubblebine-ceo-founder-ev-williams-7ff0a859f133" target="_blank" rel="noopener">medium.com/blog/medium-names-technology-and-digital-media-veteran-tony-stubblebine-ceo-founder-ev-williams-7ff0a859f133</a></div></div>
+                </div>
+              </div>
+            </div>
+            <div class="sources-note"><span>All URLs verified during preparation. Prices and product features can change.</span><span>Tumblr × Medium · Source appendix</span></div>
+          </div>
+          <footer class="slide-foot"><span>Tumblr × Medium</span><span class="foot-platform">Appendix</span><span class="foot-num">19</span></footer>
+          <template class="slide-notes">
+            <ul>
+              <li>This appendix is for reference after the talk; it is not intended to be read aloud.</li>
+              <li>Official help-centre pages support the feature and monetization claims; news sources support the ownership timeline.</li>
+              <li>If asked about a specific number, open the relevant URL rather than relying on memory.</li>
+            </ul>
+          </template>
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+  <footer class="toolbar" aria-label="Presentation controls">
+    <div class="brand">
+      <span class="brand-full"><b>Tumblr</b> <span class="cross">×</span> <b>Medium</b></span>
+      <span class="brand-compact"><b>T</b><span class="cross">×</span><b>M</b></span>
+      <span class="brand-rule"></span>
+      <span>Group deck</span>
+    </div>
+    <div class="toolbar-center">
+      <button class="tool-btn" id="prevBtn" type="button" aria-label="Previous slide" title="Previous slide (←)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+        <span class="tool-label">Prev</span>
+      </button>
+      <button class="tool-btn" id="nextBtn" type="button" aria-label="Next slide" title="Next slide (→ or Space)">
+        <span class="tool-label">Next</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg>
+      </button>
+      <span class="tool-divider" aria-hidden="true"></span>
+      <button class="tool-btn" id="overviewBtn" type="button" aria-label="Open slide overview" aria-expanded="false" title="Overview (O)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        <span class="tool-label">Overview</span>
+      </button>
+      <button class="tool-btn" id="notesBtn" type="button" aria-label="Toggle speaker notes" aria-expanded="false" title="Speaker notes (N)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M4 5h16v11H8l-4 4V5z"/><path d="M8 9h8M8 12h5"/></svg>
+        <span class="tool-label">Notes</span>
+      </button>
+      <button class="tool-btn" id="fullscreenBtn" type="button" aria-label="Enter fullscreen" aria-pressed="false" title="Fullscreen (F)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5"/></svg>
+        <span class="tool-label">Full screen</span>
+      </button>
+    </div>
+    <div class="status" aria-live="polite" aria-atomic="true">
+      <span class="status-dot" aria-hidden="true"></span>
+      <strong id="counter">01 / 19</strong>
+      <span class="status-pct" id="progressText">0%</span>
+    </div>
+  </footer>
+</div>
+
+<div class="overview" id="overview" role="dialog" aria-modal="true" aria-labelledby="overviewTitle" aria-hidden="true">
+  <div class="overview-head">
+    <div>
+      <div class="ov-kicker">Slide overview</div>
+      <h2 id="overviewTitle">The whole story.</h2>
+    </div>
+    <button class="overview-close" id="overviewClose" type="button" aria-label="Close overview">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+  </div>
+  <div class="overview-grid" id="overviewGrid"></div>
+  <div class="overview-foot"><span>Select a slide to jump there.</span><span>Press <strong>O</strong> or <strong>Esc</strong> to close</span></div>
+</div>
+
+<aside class="notes-panel" id="notesPanel" role="dialog" aria-modal="true" aria-labelledby="notesTitle" aria-hidden="true">
+  <div class="notes-head">
+    <span class="nh-label">Speaker notes</span>
+    <button class="notes-close" id="notesClose" type="button" aria-label="Close speaker notes">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+  </div>
+  <div class="notes-meta" id="notesMeta">Member 1 · Introduction</div>
+  <h3 class="notes-title" id="notesTitle">Slide title</h3>
+  <div class="notes-body" id="notesBody"></div>
+  <div class="notes-footer">Toggle notes with <kbd>N</kbd> · Close with <kbd>Esc</kbd> · Your audience sees the slide, not this panel.</div>
+</aside>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<div class="rotate-hint" aria-hidden="true">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M7 7a8 8 0 0 1 12.5 6.5M17 17A8 8 0 0 1 4.5 10.5"/><path d="M19 4v4h-4M5 20v-4h4"/></svg>
+  Rotate your device for a larger view
+</div>
+
+<script>
+(() => {
+  "use strict";
+
+  /* ==========================================================
+     EDIT ME: group details
+     ========================================================== */
+  const DECK_CONFIG = {
+    groupName: "[Group Name]",
+    members: [
+      "[Member 1 Name]",
+      "[Member 2 Name]",
+      "[Member 3 Name]",
+      "[Member 4 Name]",
+      "[Member 5 Name]"
+    ]
+  };
+
+  document.querySelectorAll("[data-group]").forEach(el => {
+    el.textContent = DECK_CONFIG.groupName;
+  });
+  document.querySelectorAll("[data-member-name]").forEach(el => {
+    const n = Number(el.getAttribute("data-member-name"));
+    el.textContent = DECK_CONFIG.members[n - 1] || `[Member ${n} Name]`;
+  });
+
+  /* ==========================================================
+     Elements and state
+     ========================================================== */
+  const app = document.getElementById("app");
+  const deck = document.getElementById("deck");
+  const slides = Array.from(deck.querySelectorAll(".slide"));
+  const total = slides.length;
+  const progressFill = document.getElementById("progressFill");
+  const counter = document.getElementById("counter");
+  const progressText = document.getElementById("progressText");
+  const prevBtn = document.getElementById("prevBtn");
+  const nextBtn = document.getElementById("nextBtn");
+  const overviewBtn = document.getElementById("overviewBtn");
+  const notesBtn = document.getElementById("notesBtn");
+  const fullscreenBtn = document.getElementById("fullscreenBtn");
+  const overview = document.getElementById("overview");
+  const overviewGrid = document.getElementById("overviewGrid");
+  const overviewClose = document.getElementById("overviewClose");
+  const notesPanel = document.getElementById("notesPanel");
+  const notesClose = document.getElementById("notesClose");
+  const notesMeta = document.getElementById("notesMeta");
+  const notesTitle = document.getElementById("notesTitle");
+  const notesBody = document.getElementById("notesBody");
+  const toast = document.getElementById("toast");
+
+  let index = 0;
+  let overviewOpen = false;
+  let notesOpen = false;
+  let lastFocus = null;
+  let toastTimer = null;
+
+  const pad = n => String(n).padStart(2, "0");
+  const clamp = n => Math.max(0, Math.min(total - 1, n));
+
+  /* Add the decorative slide number used by CSS. */
+  slides.forEach((slide, i) => {
+    slide.dataset.index = pad(i + 1);
+    slide.setAttribute("aria-hidden", i === 0 ? "false" : "true");
+  });
+
+  /* ==========================================================
+     Slide navigation
+     ========================================================== */
+  function updateHash(n) {
+    try {
+      history.replaceState(null, "", `#${n + 1}`);
+    } catch (err) {
+      /* file:// or a restrictive embedding context */
+    }
+  }
+
+  function updateNotes() {
+    const slide = slides[index];
+    const template = slide.querySelector("template.slide-notes");
+    const title = slide.dataset.title || `Slide ${index + 1}`;
+    notesMeta.textContent = slide.dataset.memberLabel || "Speaker notes";
+    notesTitle.textContent = title;
+    notesBody.replaceChildren();
+    if (template) {
+      notesBody.appendChild(template.content.cloneNode(true));
+    } else {
+      const p = document.createElement("p");
+      p.textContent = "No notes for this slide.";
+      notesBody.appendChild(p);
+    }
+  }
+
+  function updateOverviewCurrent() {
+    overviewGrid.querySelectorAll(".ov-card").forEach((card, i) => {
+      const current = i === index;
+      card.classList.toggle("current", current);
+      card.setAttribute("aria-current", current ? "true" : "false");
+    });
+  }
+
+  function show(n, options = {}) {
+    const nextIndex = clamp(n);
+    const previous = index;
+    index = nextIndex;
+
+    if (index !== previous) {
+      deck.dataset.dir = index > previous ? "next" : "prev";
+    }
+
+    slides.forEach((slide, i) => {
+      const active = i === index;
+      slide.classList.toggle("active", active);
+      slide.setAttribute("aria-hidden", active ? "false" : "true");
+    });
+
+    progressFill.style.width = `${((index + 1) / total) * 100}%`;
+    counter.textContent = `${pad(index + 1)} / ${pad(total)}`;
+    progressText.textContent = `${Math.round(((index + 1) / total) * 100)}%`;
+    document.title = `${pad(index + 1)} · ${slides[index].dataset.title || "Tumblr vs Medium"}`;
+
+    prevBtn.disabled = index === 0;
+    nextBtn.disabled = index === total - 1;
+    prevBtn.style.opacity = index === 0 ? ".36" : "";
+    nextBtn.style.opacity = index === total - 1 ? ".36" : "";
+
+    if (options.updateHash !== false) updateHash(index);
+    updateNotes();
+    updateOverviewCurrent();
+  }
+
+  function next() { show(index + 1); }
+  function prev() { show(index - 1); }
+
+  function parseHash() {
+    const match = window.location.hash.match(/^#(\d+)$/);
+    if (!match) return null;
+    const n = Number(match[1]);
+    return Number.isInteger(n) && n >= 1 && n <= total ? n - 1 : null;
+  }
+
+  /* ==========================================================
+     Overview
+     ========================================================== */
+  slides.forEach((slide, i) => {
+    const card = document.createElement("button");
+    card.type = "button";
+    card.className = "ov-card";
+    card.dataset.accent = slide.dataset.accent || "neutral";
+
+    const top = document.createElement("span");
+    top.className = "ov-top";
+    const num = document.createElement("span");
+    num.className = "ov-num";
+    num.textContent = pad(i + 1);
+    const badge = document.createElement("span");
+    badge.className = "ov-badge";
+    badge.textContent = slide.dataset.memberLabel || "All members";
+    top.append(num, badge);
+
+    const title = document.createElement("span");
+    title.className = "ov-title";
+    title.textContent = slide.dataset.title || `Slide ${i + 1}`;
+
+    const meta = document.createElement("span");
+    meta.className = "ov-meta";
+    meta.textContent = i === 0 ? "Opening" : (i === total - 1 ? "Appendix" : "Click to jump");
+
+    card.append(top, title, meta);
+    card.setAttribute("aria-label", `Go to slide ${i + 1}: ${title.textContent}`);
+    card.addEventListener("click", () => {
+      closeOverview();
+      show(i);
+    });
+    overviewGrid.appendChild(card);
+  });
+
+  function openOverview() {
+    if (notesOpen) toggleNotes(false);
+    lastFocus = document.activeElement;
+    overviewOpen = true;
+    overview.classList.add("is-open");
+    overview.setAttribute("aria-hidden", "false");
+    overview.inert = false;
+    overviewBtn.setAttribute("aria-expanded", "true");
+    app.inert = true;
+    window.requestAnimationFrame(() => {
+      const current = overviewGrid.querySelector(".ov-card.current") || overviewGrid.querySelector(".ov-card");
+      if (current) current.focus();
+    });
+  }
+
+  function closeOverview(restoreFocus = true) {
+    if (!overviewOpen) return;
+    overviewOpen = false;
+    overview.classList.remove("is-open");
+    overview.setAttribute("aria-hidden", "true");
+    overview.inert = true;
+    overviewBtn.setAttribute("aria-expanded", "false");
+    app.inert = false;
+    if (restoreFocus && lastFocus && typeof lastFocus.focus === "function") lastFocus.focus();
+  }
+
+  function toggleOverview(force) {
+    const open = typeof force === "boolean" ? force : !overviewOpen;
+    if (open) openOverview();
+    else closeOverview();
+  }
+
+  /* ==========================================================
+     Speaker notes
+     ========================================================== */
+  function toggleNotes(force) {
+    const open = typeof force === "boolean" ? force : !notesOpen;
+    if (open) {
+      if (overviewOpen) closeOverview(false);
+      lastFocus = document.activeElement;
+      notesOpen = true;
+      notesPanel.classList.add("is-open");
+      notesPanel.setAttribute("aria-hidden", "false");
+      notesPanel.inert = false;
+      notesBtn.setAttribute("aria-expanded", "true");
+      app.inert = true;
+      window.requestAnimationFrame(() => notesClose.focus());
+    } else {
+      notesOpen = false;
+      notesPanel.classList.remove("is-open");
+      notesPanel.setAttribute("aria-hidden", "true");
+      notesPanel.inert = true;
+      notesBtn.setAttribute("aria-expanded", "false");
+      app.inert = false;
+      if (lastFocus && typeof lastFocus.focus === "function") lastFocus.focus();
+    }
+  }
+
+  /* ==========================================================
+     Fullscreen and toast
+     ========================================================== */
+  function showToast(message) {
+    window.clearTimeout(toastTimer);
+    toast.textContent = message;
+    toast.classList.add("show");
+    toastTimer = window.setTimeout(() => toast.classList.remove("show"), 2800);
+  }
+
+  async function toggleFullscreen() {
+    try {
+      if (!document.fullscreenElement) {
+        if (!document.documentElement.requestFullscreen) {
+          showToast("Fullscreen is not supported by this browser.");
+          return;
+        }
+        await document.documentElement.requestFullscreen();
+      } else {
+        await document.exitFullscreen();
+      }
+    } catch (err) {
+      showToast("Fullscreen was blocked. Press F after clicking the page.");
+    }
+  }
+
+  function syncFullscreenState() {
+    const active = Boolean(document.fullscreenElement);
+    fullscreenBtn.setAttribute("aria-pressed", active ? "true" : "false");
+    fullscreenBtn.setAttribute("aria-label", active ? "Exit fullscreen" : "Enter fullscreen");
+  }
+
+  /* ==========================================================
+     Events
+     ========================================================== */
+  prevBtn.addEventListener("click", prev);
+  nextBtn.addEventListener("click", next);
+  overviewBtn.addEventListener("click", () => toggleOverview());
+  overviewClose.addEventListener("click", () => closeOverview());
+  notesBtn.addEventListener("click", () => toggleNotes());
+  notesClose.addEventListener("click", () => toggleNotes(false));
+  fullscreenBtn.addEventListener("click", toggleFullscreen);
+
+  document.addEventListener("fullscreenchange", syncFullscreenState);
+
+  window.addEventListener("hashchange", () => {
+    const n = parseHash();
+    if (n !== null && n !== index) show(n, { updateHash: false });
+  });
+
+  document.addEventListener("keydown", event => {
+    if (event.defaultPrevented || event.metaKey || event.ctrlKey || event.altKey) return;
+
+    const key = event.key;
+    const onControl = event.target.closest && event.target.closest("button, a, input, textarea, select");
+
+    if (overviewOpen) {
+      if (key === "Escape" || key === "o" || key === "O") {
+        event.preventDefault();
+        closeOverview();
+      }
+      return;
+    }
+
+    if (notesOpen) {
+      if (key === "Escape" || key === "n" || key === "N") {
+        event.preventDefault();
+        toggleNotes(false);
+        return;
+      }
+      if (key === "ArrowRight" || key === "ArrowDown" || key === " " || key === "PageDown") {
+        event.preventDefault();
+        next();
+        return;
+      }
+      if (key === "ArrowLeft" || key === "ArrowUp" || key === "PageUp") {
+        event.preventDefault();
+        prev();
+        return;
+      }
+      if (key === "Home" || key === "End") {
+        event.preventDefault();
+        show(key === "Home" ? 0 : total - 1);
+      }
+      return;
+    }
+
+    if ((key === " " || key === "Enter") && onControl) return;
+
+    switch (key) {
+      case "ArrowRight":
+      case "ArrowDown":
+      case " ":
+      case "PageDown":
+        event.preventDefault();
+        next();
+        break;
+      case "ArrowLeft":
+      case "ArrowUp":
+      case "PageUp":
+        event.preventDefault();
+        prev();
+        break;
+      case "Home":
+        event.preventDefault();
+        show(0);
+        break;
+      case "End":
+        event.preventDefault();
+        show(total - 1);
+        break;
+      case "f":
+      case "F":
+        event.preventDefault();
+        toggleFullscreen();
+        break;
+      case "o":
+      case "O":
+        event.preventDefault();
+        toggleOverview();
+        break;
+      case "n":
+      case "N":
+        event.preventDefault();
+        toggleNotes();
+        break;
+      case "Escape":
+        if (document.fullscreenElement) {
+          document.exitFullscreen().catch(() => {});
+        }
+        break;
+      default:
+        break;
+    }
+  });
+
+  /* Swipe navigation. */
+  let touchStart = null;
+  deck.addEventListener("touchstart", event => {
+    if (event.touches.length !== 1 || overviewOpen || notesOpen) return;
+    const touch = event.touches[0];
+    touchStart = { x: touch.clientX, y: touch.clientY };
+  }, { passive: true });
+
+  deck.addEventListener("touchend", event => {
+    if (!touchStart) return;
+    const touch = event.changedTouches[0];
+    const dx = touch.clientX - touchStart.x;
+    const dy = touch.clientY - touchStart.y;
+    touchStart = null;
+    if (Math.abs(dx) < 48 || Math.abs(dx) < Math.abs(dy) * 1.15) return;
+    if (dx < 0) next();
+    else prev();
+  }, { passive: true });
+
+  /* Keep the experience predictable if a click lands on the inactive slide area. */
+  deck.addEventListener("click", event => {
+    if (event.target.closest("button, a")) return;
+    if (overviewOpen || notesOpen) return;
+  });
+
+  /* ==========================================================
+     Initialise
+     ========================================================== */
+  overview.inert = true;
+  notesPanel.inert = true;
+  const initial = parseHash();
+  show(initial === null ? 0 : initial, { updateHash: false });
+  if (initial === null) updateHash(0);
+  syncFullscreenState();
+})();
+</script>
+</body>
+</html>
