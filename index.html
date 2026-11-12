@@ -439,8 +439,8 @@ h2 em{font-weight:400}
 .title-bridge .line{width:3.4cqw;height:1px;background:rgba(255,255,255,.25);flex:none}
 .title-bottom{
   display:grid;
-  grid-template-columns:minmax(0,1.05fr) minmax(0,2.7fr);
-  gap:4cqw;
+  grid-template-columns:minmax(0,.62fr) minmax(0,3.35fr);
+  gap:3.2cqw;
   align-items:end;
   padding-top:2.1cqw;
   border-top:1px solid rgba(255,255,255,.17);
@@ -453,6 +453,9 @@ h2 em{font-weight:400}
 .roster-item .r-num{display:block;margin-bottom:.45cqw;font-size:.62cqw;letter-spacing:.14em;color:#79766e}
 .roster-item strong{display:block;overflow-wrap:anywhere;font-size:.86cqw;line-height:1.25;font-weight:600;color:#e6e1d7}
 .roster-item small{display:block;margin-top:.3cqw;font-size:.66cqw;line-height:1.25;color:#8f8b81}
+.roster-item .student-id{margin-top:.4cqw;color:#a8bcd8;font-variant-numeric:tabular-nums;letter-spacing:.03em}
+.roster-item .student-id::before{content:"ID ";color:#71819a}
+.roster-item .student-id + small{margin-top:.18cqw}
 
 /* ============================================================
    5. AGENDA
@@ -478,6 +481,8 @@ h2 em{font-weight:400}
 .agenda-num{font-family:var(--serif);font-size:2.15cqw;line-height:1;letter-spacing:-.04em;color:var(--accent);font-variant-numeric:tabular-nums}
 .agenda-who{min-width:0}
 .agenda-member{display:block;margin-bottom:.28cqw;font-size:.63cqw;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--faint)}
+.agenda-id{font-variant-numeric:tabular-nums;letter-spacing:.07em;color:#8c8478}
+.agenda-id::before{content:" · ID ";color:#b2a99b}
 .agenda-who strong{display:block;overflow-wrap:anywhere;font-size:1.08cqw;line-height:1.2;font-weight:600;color:var(--ink)}
 .agenda-topic{min-width:0;font-family:var(--serif);font-size:1.4cqw;line-height:1.15;color:var(--ink);letter-spacing:-.015em}
 .agenda-topic span{display:block;margin-top:.35cqw;font-family:var(--sans);font-size:.76cqw;line-height:1.35;letter-spacing:0;color:var(--muted)}
@@ -1119,11 +1124,11 @@ table.compare td.m-cell{box-shadow:inset 2px 0 0 rgba(26,137,23,.23)}
               <div class="group-hint">Use <strong>→</strong> or <strong>Space</strong> to begin</div>
             </div>
             <div class="roster" aria-label="Group members">
-              <div class="roster-item"><span class="r-num">01</span><strong data-member-name="1">[Member 1 Name]</strong><small>Introduction</small></div>
-              <div class="roster-item"><span class="r-num">02</span><strong data-member-name="2">[Member 2 Name]</strong><small>Tumblr</small></div>
-              <div class="roster-item"><span class="r-num">03</span><strong data-member-name="3">[Member 3 Name]</strong><small>Medium</small></div>
-              <div class="roster-item"><span class="r-num">04</span><strong data-member-name="4">[Member 4 Name]</strong><small>Comparison</small></div>
-              <div class="roster-item"><span class="r-num">05</span><strong data-member-name="5">[Member 5 Name]</strong><small>Evaluation</small></div>
+              <div class="roster-item"><span class="r-num">01</span><strong data-member-name="1">[Member 1 Name]</strong><small class="student-id" data-student-id="1">2026120427</small><small>Introduction</small></div>
+              <div class="roster-item"><span class="r-num">02</span><strong data-member-name="2">[Member 2 Name]</strong><small class="student-id" data-student-id="2">2026130001</small><small>Tumblr</small></div>
+              <div class="roster-item"><span class="r-num">03</span><strong data-member-name="3">[Member 3 Name]</strong><small class="student-id" data-student-id="3">2026117533</small><small>Medium</small></div>
+              <div class="roster-item"><span class="r-num">04</span><strong data-member-name="4">[Member 4 Name]</strong><small class="student-id" data-student-id="4">2026112435</small><small>Comparison</small></div>
+              <div class="roster-item"><span class="r-num">05</span><strong data-member-name="5">[Member 5 Name]</strong><small class="student-id" data-student-id="5">2026112587</small><small>Evaluation and Conclusion</small></div>
             </div>
           </div>
           <template class="slide-notes">
@@ -1149,32 +1154,32 @@ table.compare td.m-cell{box-shadow:inset 2px 0 0 rgba(26,137,23,.23)}
             <div class="agenda">
               <div class="agenda-row">
                 <div class="agenda-num">01</div>
-                <div class="agenda-who"><span class="agenda-member">Member 1</span><strong data-member-name="1">[Member 1 Name]</strong></div>
+                <div class="agenda-who"><span class="agenda-member">Member 1 <span class="agenda-id" data-student-id="1">2026120427</span></span><strong data-member-name="1">[Member 1 Name]</strong></div>
                 <div class="agenda-topic">Introduction<span>Blogging platforms · Origins · Platform overview</span></div>
                 <div class="agenda-slides">03–05</div>
               </div>
               <div class="agenda-row">
                 <div class="agenda-num">02</div>
-                <div class="agenda-who"><span class="agenda-member">Member 2</span><strong data-member-name="2">[Member 2 Name]</strong></div>
+                <div class="agenda-who"><span class="agenda-member">Member 2 <span class="agenda-id" data-student-id="2">2026130001</span></span><strong data-member-name="2">[Member 2 Name]</strong></div>
                 <div class="agenda-topic">Tumblr<span>History · Features · Content and audience</span></div>
                 <div class="agenda-slides">06–08</div>
               </div>
               <div class="agenda-row">
                 <div class="agenda-num">03</div>
-                <div class="agenda-who"><span class="agenda-member">Member 3</span><strong data-member-name="3">[Member 3 Name]</strong></div>
+                <div class="agenda-who"><span class="agenda-member">Member 3 <span class="agenda-id" data-student-id="3">2026117533</span></span><strong data-member-name="3">[Member 3 Name]</strong></div>
                 <div class="agenda-topic">Medium<span>History · Features · Content and audience</span></div>
                 <div class="agenda-slides">09–11</div>
               </div>
               <div class="agenda-row">
                 <div class="agenda-num">04</div>
-                <div class="agenda-who"><span class="agenda-member">Member 4</span><strong data-member-name="4">[Member 4 Name]</strong></div>
+                <div class="agenda-who"><span class="agenda-member">Member 4 <span class="agenda-id" data-student-id="4">2026112435</span></span><strong data-member-name="4">[Member 4 Name]</strong></div>
                 <div class="agenda-topic">Comparison<span>Similarities · Eight criteria · Creation and UX</span></div>
                 <div class="agenda-slides">12–14</div>
               </div>
               <div class="agenda-row">
                 <div class="agenda-num">05</div>
-                <div class="agenda-who"><span class="agenda-member">Member 5</span><strong data-member-name="5">[Member 5 Name]</strong></div>
-                <div class="agenda-topic">Evaluation<span>Trade-offs · Best fit · Conclusion and Q&amp;A</span></div>
+                <div class="agenda-who"><span class="agenda-member">Member 5 <span class="agenda-id" data-student-id="5">2026112587</span></span><strong data-member-name="5">[Member 5 Name]</strong></div>
+                <div class="agenda-topic">Evaluation and Conclusion<span>Trade-offs · Best fit · Conclusion and Q&amp;A</span></div>
                 <div class="agenda-slides">15–18</div>
               </div>
             </div>
@@ -1639,10 +1644,10 @@ table.compare td.m-cell{box-shadow:inset 2px 0 0 rgba(26,137,23,.23)}
         <!-- =====================================================
              15 — ADVANTAGES AND DISADVANTAGES
              ===================================================== -->
-        <section class="slide compare" data-title="The honest scorecard" data-member-label="Member 5 · Evaluation" data-member="5" data-accent="compare" aria-roledescription="slide" aria-label="Advantages and disadvantages of both platforms">
+        <section class="slide compare" data-title="The honest scorecard" data-member-label="Member 5 · Evaluation and Conclusion" data-member="5" data-accent="compare" aria-roledescription="slide" aria-label="Advantages and disadvantages of both platforms">
           <header class="slide-head">
             <p class="kicker">Evaluation · Trade-offs</p>
-            <div class="member-badge"><span class="dot"></span>Member 5 · Evaluation</div>
+            <div class="member-badge"><span class="dot"></span>Member 5 · Evaluation and Conclusion</div>
           </header>
           <div class="slide-body">
             <p class="eyebrow">No platform wins every category</p>
@@ -1676,10 +1681,10 @@ table.compare td.m-cell{box-shadow:inset 2px 0 0 rgba(26,137,23,.23)}
         <!-- =====================================================
              16 — WHICH PLATFORM FITS
              ===================================================== -->
-        <section class="slide compare" data-title="Which platform fits the work?" data-member-label="Member 5 · Evaluation" data-member="5" data-accent="compare" aria-roledescription="slide" aria-label="Which platform suits which purpose">
+        <section class="slide compare" data-title="Which platform fits the work?" data-member-label="Member 5 · Evaluation and Conclusion" data-member="5" data-accent="compare" aria-roledescription="slide" aria-label="Which platform suits which purpose">
           <header class="slide-head">
             <p class="kicker">Evaluation · Best fit</p>
-            <div class="member-badge"><span class="dot"></span>Member 5 · Evaluation</div>
+            <div class="member-badge"><span class="dot"></span>Member 5 · Evaluation and Conclusion</div>
           </header>
           <div class="slide-body">
             <p class="eyebrow">A practical decision</p>
@@ -1719,10 +1724,10 @@ table.compare td.m-cell{box-shadow:inset 2px 0 0 rgba(26,137,23,.23)}
         <!-- =====================================================
              17 — CONCLUSION
              ===================================================== -->
-        <section class="slide slide--conclusion" data-title="Conclusion" data-member-label="Member 5 · Evaluation" data-member="5" data-accent="compare" aria-roledescription="slide" aria-label="Overall conclusion">
+        <section class="slide slide--conclusion" data-title="Conclusion" data-member-label="Member 5 · Evaluation and Conclusion" data-member="5" data-accent="compare" aria-roledescription="slide" aria-label="Overall conclusion">
           <header class="slide-head">
             <p class="kicker">Conclusion</p>
-            <div class="member-badge"><span class="dot"></span>Member 5 · Evaluation</div>
+            <div class="member-badge"><span class="dot"></span>Member 5 · Evaluation and Conclusion</div>
           </header>
           <div class="slide-body" style="padding-top:0">
             <div class="conclusion-main">
@@ -1749,10 +1754,10 @@ table.compare td.m-cell{box-shadow:inset 2px 0 0 rgba(26,137,23,.23)}
         <!-- =====================================================
              18 — THANK YOU / Q&A
              ===================================================== -->
-        <section class="slide slide--thanks" data-title="Thank you and Q&amp;A" data-member-label="Member 5 · Evaluation" data-member="5" data-accent="compare" aria-roledescription="slide" aria-label="Thank you and questions">
+        <section class="slide slide--thanks" data-title="Thank you and Q&amp;A" data-member-label="Member 5 · Evaluation and Conclusion" data-member="5" data-accent="compare" aria-roledescription="slide" aria-label="Thank you and questions">
           <header class="slide-head">
             <p class="kicker">Thank you</p>
-            <div class="member-badge"><span class="dot"></span>Member 5 · Evaluation</div>
+            <div class="member-badge"><span class="dot"></span>Member 5 · Evaluation and Conclusion</div>
           </header>
           <div class="slide-body" style="padding-top:0">
             <div class="thanks-layout">
@@ -1923,13 +1928,20 @@ table.compare td.m-cell{box-shadow:inset 2px 0 0 rgba(26,137,23,.23)}
      EDIT ME: group details
      ========================================================== */
   const DECK_CONFIG = {
-    groupName: "[Group Name]",
+    groupName: "Group 5",
     members: [
-      "[Member 1 Name]",
-      "[Member 2 Name]",
-      "[Member 3 Name]",
-      "[Member 4 Name]",
-      "[Member 5 Name]"
+      "Muhammad Danial bin Ibrahim",
+      "Aiman Haqim",
+      "Nadrah Izyan binti Shafi'e",
+      "Siti Sara binti Mohd Azha",
+      "Tuan Nurul Iman Izlin binti Tuan Sabri"
+    ],
+    studentIds: [
+      "2026120427",
+      "2026130001",
+      "2026117533",
+      "2026112435",
+      "2026112587"
     ]
   };
 
@@ -1939,6 +1951,10 @@ table.compare td.m-cell{box-shadow:inset 2px 0 0 rgba(26,137,23,.23)}
   document.querySelectorAll("[data-member-name]").forEach(el => {
     const n = Number(el.getAttribute("data-member-name"));
     el.textContent = DECK_CONFIG.members[n - 1] || `[Member ${n} Name]`;
+  });
+  document.querySelectorAll("[data-student-id]").forEach(el => {
+    const n = Number(el.getAttribute("data-student-id"));
+    el.textContent = DECK_CONFIG.studentIds[n - 1] || `[Student ID ${n}]`;
   });
 
   /* ==========================================================

@@ -51,24 +51,31 @@ Each slide has 2–3 short talking points in a hidden `<template class="slide-no
 
 Open `index.html` in a plain text editor. All slides are in one `<main class="deck">` block.
 
-### Group name and member names
+### Group name, member names, and student IDs
 
 Near the bottom of the file, inside the `<script>` block, find:
 
 ```js
 const DECK_CONFIG = {
-  groupName: "[Group Name]",
+  groupName: "Group 5",
   members: [
-    "[Member 1 Name]",
-    "[Member 2 Name]",
-    "[Member 3 Name]",
-    "[Member 4 Name]",
-    "[Member 5 Name]"
+    "Muhammad Danial bin Ibrahim",
+    "Aiman Haqim",
+    "Nadrah Izyan binti Shafi'e",
+    "Siti Sara binti Mohd Azha",
+    "Tuan Nurul Iman Izlin binti Tuan Sabri"
+  ],
+  studentIds: [
+    "2026120427",
+    "2026130001",
+    "2026117533",
+    "2026112435",
+    "2026112587"
   ]
 };
 ```
 
-Replace the placeholders with your actual group and member names. The values are inserted into the title slide and agenda automatically. Keep the quotation marks and commas.
+The values are inserted into the title slide and agenda automatically; the student IDs appear on both. Keep the quotation marks and commas, and keep the arrays in member order. To change the group name, edit `groupName`.
 
 ### Slide text
 
@@ -161,7 +168,7 @@ Create a new repository, upload `index.html` and `README.md`, then follow steps 
 ## Notes and assumptions
 
 - **Slide count:** the detailed outline names 18 presentation slides; the deck adds a final source appendix, for 19 total.
-- **Placeholders:** `[Group Name]` and `[Member 1 Name]` … `[Member 5 Name]` are intentionally left in place for you to replace.
+- **Group details:** the deck is configured for Group 5 with all five member names and student IDs. Edit `DECK_CONFIG` to change them.
 - **Facts:** platform history, ownership, features, pricing, and audience claims were checked against official help pages and contemporaneous reporting in November 2026. The 60% “creative” figure is Tumblr’s own advertising audience research and is labelled as such on the slide.
 - **Monetization:** Tumblr is described as ad-led with limited direct creator pay; Medium is described as reader-subscription-led with its Partner Program. These are comparative characterizations, not claims that creator earnings are impossible on Tumblr.
 - **Fullscreen:** standard browsers support the Fullscreen API. iOS Safari may block element fullscreen; the deck shows a short message instead of failing silently.
